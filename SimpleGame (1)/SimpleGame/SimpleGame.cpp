@@ -12,10 +12,11 @@ but WITHOUT ANY WARRANTY.
 #include <iostream>
 #include "Dependencies\glew.h"
 #include "Dependencies\freeglut.h"
-
+#include "object.h"
 #include "Renderer.h"
 
 Renderer *g_Renderer = NULL;
+Object* test = new Object(0.0f, 0.0f, 0.0f, 100.0f, 0.0f, 0.5f, 1.0f, 1.0f);
 
 void RenderScene(void)
 {
@@ -24,6 +25,15 @@ void RenderScene(void)
 
 	// Renderer Test
 	g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);
+
+
+	//vec3 kakak;
+	//object->getposition(kakak);
+	//g_Renderer->DrawSolidRect(kakakak.m_x, kakakak.m_y, kakakak.m_z 4, 1, 0, 1, 1);
+	
+	g_Renderer->DrawSolidRect(test->Get_x(),
+	test->Get_y(), test->Get_z(), test->Get_size(),
+	test->Get_R(), test->Get_G(), test->Get_B(), test->Get_A());
 
 	glutSwapBuffers();
 }
@@ -83,6 +93,8 @@ int main(int argc, char **argv)
 	glutMainLoop();
 
 	delete g_Renderer;
+	delete test;
+
 
     return 0;
 }
