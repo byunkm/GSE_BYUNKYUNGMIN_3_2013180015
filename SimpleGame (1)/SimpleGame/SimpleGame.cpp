@@ -14,9 +14,9 @@ but WITHOUT ANY WARRANTY.
 #include "Dependencies\freeglut.h"
 #include "object.h"
 #include "Renderer.h"
-
+int point_x, point_y = 0;
 Renderer *g_Renderer = NULL;
-Object* test = new Object(0.0f, 0.0f, 0.0f, 100.0f, 0.0f, 0.5f, 1.0f, 1.0f);
+Object* test = new Object(0.0f, 0.0f, 0.0f, 100.0f, 2.0f, 0.0f, 0.5f, 1.0f, 1.0f);
 
 void RenderScene(void)
 {
@@ -26,14 +26,15 @@ void RenderScene(void)
 	// Renderer Test
 	g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);
 
-
 	//vec3 kakak;
 	//object->getposition(kakak);
 	//g_Renderer->DrawSolidRect(kakakak.m_x, kakakak.m_y, kakakak.m_z 4, 1, 0, 1, 1);
-	
-	g_Renderer->DrawSolidRect(test->Get_x(),
-	test->Get_y(), test->Get_z(), test->Get_size(),
+	g_Renderer->DrawSolidRect(point_x, point_y, test->Get_z(), test->Get_size(),
 	test->Get_R(), test->Get_G(), test->Get_B(), test->Get_A());
+
+	//test->Update();
+	
+	
 
 	glutSwapBuffers();
 }
@@ -45,6 +46,15 @@ void Idle(void)
 
 void MouseInput(int button, int state, int x, int y)
 {
+
+	printf("%d, %d\n", x, y);
+
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_UP)
+	{
+		point_x = x - 250;
+		point_y = (y - 250) * -1;
+	}
+
 	RenderScene();
 }
 
