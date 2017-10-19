@@ -20,6 +20,7 @@ Object::Object(float x, float y, float z, float size, float speed, float R, floa
 
 }
 float Object::Get_x() {
+	
 	return x;
 	
 }

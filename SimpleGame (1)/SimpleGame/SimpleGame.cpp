@@ -17,6 +17,8 @@ but WITHOUT ANY WARRANTY.
 int point_x, point_y = 0;
 Renderer *g_Renderer = NULL;
 Object* test = new Object(0.0f, 0.0f, 0.0f, 100.0f, 2.0f, 0.0f, 0.5f, 1.0f, 1.0f);
+Object* test1[50];
+
 
 void RenderScene(void)
 {
@@ -32,7 +34,7 @@ void RenderScene(void)
 	g_Renderer->DrawSolidRect(point_x, point_y, test->Get_z(), test->Get_size(),
 	test->Get_R(), test->Get_G(), test->Get_B(), test->Get_A());
 
-	//test->Update();
+	test->Update();
 	
 	
 
