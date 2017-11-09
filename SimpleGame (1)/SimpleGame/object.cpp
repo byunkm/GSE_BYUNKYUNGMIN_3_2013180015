@@ -1,78 +1,97 @@
 #include "stdafx.h"
 #include "Object.h"
+#include <math.h>
 
- Object::Object()
+
+Object::Object(float x, float y, int type)
 {
+	if (type == 0) // 건물
+	{
+		set_x(x);
+		set_y(y);
 
+		set_vx(0);
+		set_vy(0);
 
+		set_size(50);
+		set_colorR(1); set_colorG(0); set_colorB(1); set_colorA(0.5);
+
+		set_life(500.f);
+
+		set_type(type);
+	}
+
+	if (type == 1) // 캐릭터
+	{
+		set_x(x);
+		set_y(y);
+		set_speed(300);
+
+		set_vx(get_speed() *(((float)std::rand() / (float)RAND_MAX) - 0.5f));
+		set_vy(get_speed() *(((float)std::rand() / (float)RAND_MAX) - 0.5f));
+
+		set_size(10);
+		set_colorR(1); set_colorG(1); set_colorB(1); set_colorA(1);
+
+		set_life(10.f);
+		set_lifetime(1000.f);
+
+		set_type(type);
+	}
+
+	if (type == 2) // 총알
+	{
+		set_x(x);
+		set_y(y);
+		set_speed(600);
+
+		set_vx((get_speed()*(((float)std::rand() / (float)RAND_MAX) - 0.5f)));
+		set_vy((get_speed()*(((float)std::rand() / (float)RAND_MAX) - 0.5f)));
+
+		set_size(2);
+		set_colorR(0); set_colorG(1); set_colorB(1); set_colorA(1);
+
+		set_life(20.f);
+
+		set_type(type);
+	}
 }
 
 Object::~Object()
 {
 
-
 }
 
-Object::Object(float x, float y, float z, float size, float speed, float R, float G, float B, float A) : x(x), y(y), z(z), size(size), speed(speed),R(R), G(G), B(B), A(A)
+void Object::Update(float elapsedTime)
 {
-	
+	float elapsedTimeInSecond = elapsedTime / 1000.f;
 
+	set_x(get_x() + get_vx()*elapsedTimeInSecond);
+	set_y(get_y() + get_vy()*elapsedTimeInSecond);
 
-}
-float Object::Get_x() {
-	
-	return x;
-	
-}
-float Object::Get_y() {
-	return y;
-	
-}
-float Object::Get_z() {
-	return z;
-	
-}
-float Object::Get_size() {
-	return size;
-	
-}
-float Object::Get_speed(){
-	return speed;
-}
-float Object::Get_R() {
-	return R;
-	
-}
-float Object::Get_G() {
-	return G;
-	
-}
-float Object::Get_B() {
-	return B;
-	
-}
-float Object::Get_A() {
-	return A;
-}
+	if (get_x() > 250)
+	{
+		set_vx(-get_vx());
+	}
 
-void Object::Position()
-{
-	x = Get_x();
-	y = Get_y();
-	z = Get_z();
-	size = Get_size();
-}
+	if (get_x() < -250)
+	{
+		set_vx(-get_vx());
+	}
 
+	if (get_y() > 250)
+	{
+		set_vy(-get_vy());
+	}
 
-void Object::Update()
-{
-	if (x < 500)
-		moving();
+	if (get_y() < -250)
+	{
+		set_vy(-get_vy());
+	}
 
-}
+	if (get_lifetime() > 0.f)
+	{
+		set_lifetime(get_lifetime() - 0.5f);
+	}
 
-void Object::moving()
-{
-	x += speed;
-	y += speed;
 }

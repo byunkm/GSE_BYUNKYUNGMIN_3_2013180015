@@ -9,34 +9,34 @@ but WITHOUT ANY WARRANTY.
 */
 
 #include "stdafx.h"
+#include "windows.h"
+
+#include "SceneMgr.h"
+#include "Object.h"
+
 #include <iostream>
 #include "Dependencies\glew.h"
 #include "Dependencies\freeglut.h"
-#include "object.h"
-#include "Renderer.h"
-int point_x, point_y = 0;
-Renderer *g_Renderer = NULL;
-Object* test = new Object(0.0f, 0.0f, 0.0f, 100.0f, 2.0f, 0.0f, 0.5f, 1.0f, 1.0f);
-Object* test1[50];
 
+SceneMgr *Scene = NULL;
+
+DWORD g_prevTime = 0;
+
+bool LeftButtonDown = false;
+bool RightButtonDown = false;
+bool Build = false;
 
 void RenderScene(void)
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-	// Renderer Test
-	g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);
+	DWORD currTime = timeGetTime();
+	DWORD elapsedTime = currTime - g_prevTime;
+	g_prevTime = currTime;
 
-	//vec3 kakak;
-	//object->getposition(kakak);
-	//g_Renderer->DrawSolidRect(kakakak.m_x, kakakak.m_y, kakakak.m_z 4, 1, 0, 1, 1);
-	g_Renderer->DrawSolidRect(point_x, point_y, test->Get_z(), test->Get_size(),
-	test->Get_R(), test->Get_G(), test->Get_B(), test->Get_A());
-
-	test->Update();
-	
-	
+	Scene->UpdateAllObjects((float)elapsedTime);
+	Scene->DrawAllObjects();
 
 	glutSwapBuffers();
 }
@@ -46,17 +46,45 @@ void Idle(void)
 	RenderScene();
 }
 
+//button
+//GLUT_LEFT_BUTTON, GLUT_MIDDLE_BUTTON, GLUT_RIGHT_BUTTON
+//state
+//GLUT_UP, GLUT_DOWN
 void MouseInput(int button, int state, int x, int y)
 {
 
-	printf("%d, %d\n", x, y);
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+	{
+		LeftButtonDown = true;
+	}
+
+	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
+	{
+		RightButtonDown = true;
+	}
 
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_UP)
 	{
-		point_x = x - 250;
-		point_y = (y - 250) * -1;
+		if (LeftButtonDown)
+		{
+			if (Build == true) // 건물이 건설 완료 되어야 캐릭터를 생성시킬 수 있다.
+				Scene->AddObject(x - 250, -y + 250, OBJECT_CHARACTER);
+		}
+		LeftButtonDown = false;
 	}
 
+	if (button == GLUT_RIGHT_BUTTON && state == GLUT_UP)
+	{
+		if (RightButtonDown)
+		{
+			if (Build == false) // 건물은 한 채만 지을 수 있다. 파괴될경우 재생성 불가
+			{
+				Scene->AddObject(x - 250, -y + 250, OBJECT_BUILDING);
+				Build = true;
+			}
+		}
+		RightButtonDown = false;
+	}
 	RenderScene();
 }
 
@@ -77,9 +105,10 @@ int main(int argc, char **argv)
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(0, 0);
 	glutInitWindowSize(500, 500);
-	glutCreateWindow("Game Software Engineering KPU");
+	glutCreateWindow("GAM SOGONG");
 
 	glewInit();
+
 	if (glewIsSupported("GL_VERSION_3_0"))
 	{
 		std::cout << " GLEW Version is 3.0\n ";
@@ -89,25 +118,21 @@ int main(int argc, char **argv)
 		std::cout << "GLEW 3.0 not supported\n ";
 	}
 
-	// Initialize Renderer
-	g_Renderer = new Renderer(500, 500);
-	if (!g_Renderer->IsInitialized())
-	{
-		std::cout << "Renderer could not be initialized.. \n";
-	}
-
 	glutDisplayFunc(RenderScene);
 	glutIdleFunc(Idle);
 	glutKeyboardFunc(KeyInput);
 	glutMouseFunc(MouseInput);
 	glutSpecialFunc(SpecialKeyInput);
 
+	Scene = new SceneMgr(500, 500);
+	
+
+	g_prevTime = timeGetTime();
+
 	glutMainLoop();
 
-	delete g_Renderer;
-	delete test;
+	delete Scene;
 
-
-    return 0;
+	return 0;
 }
 
