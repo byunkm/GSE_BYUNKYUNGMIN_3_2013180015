@@ -68,7 +68,10 @@ void MouseInput(int button, int state, int x, int y)
 		if (LeftButtonDown)
 		{
 			if (Build == true) // 건물이 건설 완료 되어야 캐릭터를 생성시킬 수 있다.
+			{
+				//Scene->onwer += 1; // 화살의 부모 캐릭터 ID
 				Scene->AddObject(x - 250, -y + 250, OBJECT_CHARACTER);
+			}
 		}
 		LeftButtonDown = false;
 	}
@@ -111,7 +114,7 @@ int main(int argc, char **argv)
 
 	if (glewIsSupported("GL_VERSION_3_0"))
 	{
-		std::cout << " GLEW Version is 3.0\n ";
+		std::cout << " GLEW d is 3.0\n ";
 	}
 	else
 	{

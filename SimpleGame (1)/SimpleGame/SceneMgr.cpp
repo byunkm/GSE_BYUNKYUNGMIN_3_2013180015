@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "SceneMgr.h"
 
+GLuint Texture_Num = 0;
 SceneMgr::SceneMgr(int width, int height)
 {
 	renderer = new Renderer(width, height);
-
 	m_windowWidth = width;
 	m_windowHeight = height;
 
@@ -13,25 +13,46 @@ SceneMgr::SceneMgr(int width, int height)
 		m_Objects[i] = NULL;
 		m_bullet[i] = NULL;
 	}
+
+	char file_path[] = "terret.png";
+	Texture_Num = renderer->CreatePngTexture(file_path);
 }
 
 void SceneMgr::DrawAllObjects()
 {
 	renderer->DrawSolidRect(0, 0, 0, m_windowWidth, 0, 0, 0, 0.4);
+
 	for (int i = 0; i < MAXOBJECT; i++)
 	{
 		if (m_Objects[i] != NULL)
 		{
-			renderer->DrawSolidRect(
-				m_Objects[i]->get_x(),
-				m_Objects[i]->get_y(),
-				0,
-				m_Objects[i]->get_size(),
-				m_Objects[i]->get_colorR(),
-				m_Objects[i]->get_colorG(),
-				m_Objects[i]->get_colorB(),
-				m_Objects[i]->get_colorA()
-			);
+			if (m_Objects[i]->get_type() == OBJECT_BUILDING)
+			{
+				renderer->DrawTexturedRect(
+					m_Objects[i]->get_x(),
+					m_Objects[i]->get_y(),
+					0,
+					m_Objects[i]->get_size(),
+					m_Objects[i]->get_colorR(),
+					m_Objects[i]->get_colorG(),
+					m_Objects[i]->get_colorB(),
+					m_Objects[i]->get_colorA(),
+					Texture_Num
+				);
+			}
+			else
+			{
+				renderer->DrawSolidRect(
+					m_Objects[i]->get_x(),
+					m_Objects[i]->get_y(),
+					0,
+					m_Objects[i]->get_size(),
+					m_Objects[i]->get_colorR(),
+					m_Objects[i]->get_colorG(),
+					m_Objects[i]->get_colorB(),
+					m_Objects[i]->get_colorA()
+				);
+			}
 		}
 
 		if (m_bullet[i] != NULL)
@@ -82,7 +103,6 @@ int SceneMgr::AddObject(float x, float y, int Object_type)
 		}
 		return -1;
 	}
-
 }
 int SceneMgr::Addbullet()
 {
@@ -101,10 +121,10 @@ int SceneMgr::Addbullet()
 	return -1;
 }
 
+
 void SceneMgr::UpdateAllObjects(float elapsedTime)
 {
 	Collision();
-
 	float elapsedTimeInSecond = elapsedTime / 1000.f;
 	time += elapsedTimeInSecond;
 	if (time >= 0.5f)
@@ -115,24 +135,17 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 	else 
 	{
 		term = true;
-		Shoot = true;
+		Shoot = true; 
+		ArrowShoot = true;
 	}
 	//// 0.5초에 한발씩 쏘기 위한 변수 설정
+	
 
 	for (int i = 0; i < MAXOBJECT; i++)
 	{
 		if (m_Objects[i] != NULL)
 		{
-			if (m_Objects[i]->get_lifetime() < 0.f)						    // 시간에 따른 오브젝트 제거
-			{
-				if (m_Objects[i]->get_type() == OBJECT_CHARACTER)			// 캐릭터일 경우에만 시간에 따라 제거한다
-				{
-					delete m_Objects[i];
-					m_Objects[i] = NULL;
-				}
-			}
-
-			if (m_Objects[i]->get_life() <= 0.f)							// life 가 0 이하면 오브젝트 제거
+			if (m_Objects[i]->get_lifetime() < 0.0001f || m_Objects[i]->get_life() <= 0.0001f) // 시간과 라이프에 따른 오브젝트 제거
 			{
 				delete m_Objects[i];
 				m_Objects[i] = NULL;
@@ -141,12 +154,21 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 			else
 			{
 				m_Objects[i]->Update(elapsedTime);
-				
+				if (m_Objects[i]->get_type() == OBJECT_CHARACTER) // 오브젝트의 타입이 캐릭터일때
+				{
+					if (m_Objects[i]->get_Arrow_delay() > 0.5f)   // 화살 발사 간격
+					{
+						int arrow_ID = AddObject(m_Objects[i]->get_x(), m_Objects[i]->get_y(), OBJECT_ARROW); // 화살이 오브젝트 배열의 몇번째에 들어가는지 저장.
+						m_Objects[i]->set_Arrow_delay(0.f);
+						m_Objects[i]->set_ID(i);        // 부모 캐릭터에 아이디 부여
+						m_Objects[arrow_ID]->set_ID(i); // 화살에 부모 캐릭터의 아이디 부여
+					}
+				}
 			}
 
 			if (term == false && Shoot == true)
 			{
-				Addbullet();												//0.5초간격 총알 추가
+				Addbullet();	//0.5초간격 총알 추가
 				Shoot = false;
 			}
 		}
@@ -193,9 +215,18 @@ void SceneMgr::Collision()
 							if (m_Objects[i]->get_type() == OBJECT_BUILDING)								 // 오브젝트 타입이 빌딩이라면
 							{
 								m_Objects[i]->set_life(m_Objects[i]->get_life() - m_Objects[j]->get_life()); // 빌딩의 hp에서 플레이어의 hp를 뺀다
-
 								delete m_Objects[j];														 // 캐릭터는 삭제한다
 								m_Objects[j] = NULL;
+							}
+
+							if (m_Objects[i]->get_type() == OBJECT_CHARACTER && m_Objects[j]->get_type() ==OBJECT_ARROW) // 캐릭터와 화살 사이에 진행
+							{
+								if (m_Objects[i]->get_ID() != m_Objects[j]->get_ID()) // 아이디가 달라야 실행(자기가 쏜 총알이 아니어야한다)
+								{
+									m_Objects[i]->set_life(m_Objects[i]->get_life() - m_Objects[j]->get_life());
+									delete m_Objects[j];
+									m_Objects[j] = NULL;
+								}
 							}
 						}
 					}
@@ -222,7 +253,7 @@ void SceneMgr::Collision()
 
 					if (CollisionCheck(minX, minY, maxX, maxY, minBX, minBY, maxBX, maxBY))				// 총알과 캐릭터 충돌 체크
 					{
-						if (m_Objects[i]->get_type() == OBJECT_CHARACTER)								// 부딪힌 오브젝트가 캐릭터
+						if (m_Objects[i]->get_type() == OBJECT_CHARACTER || m_Objects[i]->get_type() == OBJECT_ARROW)
 						{
 							m_Objects[i]->set_life(m_Objects[i]->get_life() - m_bullet[j]->get_life()); // 플레이어 life - 총알 life
 							delete m_bullet[j];															// 총알삭제

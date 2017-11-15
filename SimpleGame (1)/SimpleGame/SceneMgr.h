@@ -26,19 +26,23 @@ public:
 	bool CollisionCheck(float a_minX, float a_minY, float a_maxX, float a_maxY, float b_minX, float b_minY, float b_maxX, float b_maxY);
 
 	int BulletNum = 0; // 총알 수 새는 변수
-
+	int onwer = 0;
 private:
 	Renderer *renderer;
 
 	Object *m_Objects[MAXOBJECT];
 	Object *m_bullet[MAXOBJECT];
-
+	
+	int id=0;
 	bool Shoot = true;
+	bool ArrowShoot = true;
 	bool term = true;
+	
 	float time = 0;
 
 	int m_windowWidth;
 	int m_windowHeight;
+
 
 };
 

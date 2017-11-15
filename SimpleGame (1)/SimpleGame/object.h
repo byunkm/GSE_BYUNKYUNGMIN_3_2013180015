@@ -24,8 +24,10 @@ private:
 	float m_life;
 	float m_lifeTime;
 
-	int Object_type;
+	float Arrow_delay;
 
+	int Object_type;
+	int Object_ID;
 public:
 
 	float get_x() { return m_x; }
@@ -43,9 +45,10 @@ public:
 
 	float get_life() { return m_life; }
 	float get_lifetime() { return m_lifeTime; }
+	float get_Arrow_delay(){ return Arrow_delay; }
 
 	int get_type() { return Object_type; }
-
+	int get_ID() { return Object_ID; }
 public:
 	void set_x(float input) { m_x = input; }
 	void set_y(float input) { m_y = input; }
@@ -63,7 +66,8 @@ public:
 	void set_lifetime(float input) { m_lifeTime = input; }
 
 	void set_type(int input) { Object_type = input; }
-
+	void set_ID(int input) { Object_ID = input; }
+	void set_Arrow_delay(float input) { Arrow_delay = input; }
 public:
 	void Update(float elapsedTime);
 };
