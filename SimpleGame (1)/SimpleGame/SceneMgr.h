@@ -26,7 +26,7 @@ public:
 	bool CollisionCheck(float a_minX, float a_minY, float a_maxX, float a_maxY, float b_minX, float b_minY, float b_maxX, float b_maxY);
 
 	int BulletNum = 0; // 총알 수 새는 변수
-	int onwer = 0;
+	int onwer = 0;     // 캐릭터 갯수
 private:
 	Renderer *renderer;
 

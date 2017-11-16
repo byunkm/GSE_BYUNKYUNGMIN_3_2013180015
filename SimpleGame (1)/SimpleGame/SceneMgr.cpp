@@ -147,6 +147,8 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 		{
 			if (m_Objects[i]->get_lifetime() < 0.0001f || m_Objects[i]->get_life() <= 0.0001f) // 시간과 라이프에 따른 오브젝트 제거
 			{
+				if (m_Objects[i]->get_type() == OBJECT_CHARACTER)
+					onwer -= 1;
 				delete m_Objects[i];
 				m_Objects[i] = NULL;
 			}
@@ -217,6 +219,7 @@ void SceneMgr::Collision()
 								m_Objects[i]->set_life(m_Objects[i]->get_life() - m_Objects[j]->get_life()); // 빌딩의 hp에서 플레이어의 hp를 뺀다
 								delete m_Objects[j];														 // 캐릭터는 삭제한다
 								m_Objects[j] = NULL;
+								onwer -= 1;
 							}
 
 							if (m_Objects[i]->get_type() == OBJECT_CHARACTER && m_Objects[j]->get_type() ==OBJECT_ARROW) // 캐릭터와 화살 사이에 진행
@@ -226,6 +229,8 @@ void SceneMgr::Collision()
 									m_Objects[i]->set_life(m_Objects[i]->get_life() - m_Objects[j]->get_life());
 									delete m_Objects[j];
 									m_Objects[j] = NULL;
+									onwer -= 1;
+
 								}
 							}
 						}
