@@ -234,14 +234,23 @@ void SceneMgr::Collision()
 						{
 							if (m_Objects[i]->get_type() == OBJECT_BUILDING)								 // 오브젝트 타입이 빌딩이라면
 							{
-								m_Objects[i]->set_life(m_Objects[i]->get_life() - m_Objects[j]->get_life()); // 빌딩의 hp에서 플레이어의 hp를 뺀다
+								m_Objects[i]->set_life(m_Objects[i]->get_life() - m_Objects[j]->get_life()); // 빌딩의 hp에서 부딪힌 오브젝트 hp를 뺀다
 								delete m_Objects[j];														 // 빌딩과 부딪힌 오브젝트의 삭제
 								m_Objects[j] = NULL;
 							}
 
-							if (m_Objects[i]->get_type() == OBJECT_CHARACTER && m_Objects[j]->get_type() ==OBJECT_ARROW) // 캐릭터와 화살 사이에 진행
+							if (m_Objects[i]->get_type() == OBJECT_CHARACTER) // 캐릭터일때
 							{
-								if (m_Objects[i]->get_ID() != m_Objects[j]->get_ID()) // 아이디가 달라야 실행(자기가 쏜 총알이 아니어야한다)
+								if (m_Objects[j]->get_type() == OBJECT_ARROW)
+								{
+									if (m_Objects[i]->get_ID() != m_Objects[j]->get_ID()) // 아이디가 달라야 실행(자기가 쏜 화살이 아니어야한다)
+									{
+										m_Objects[i]->set_life(m_Objects[i]->get_life() - m_Objects[j]->get_life());
+										delete m_Objects[j];
+										m_Objects[j] = NULL;
+									}
+								}
+								else
 								{
 									m_Objects[i]->set_life(m_Objects[i]->get_life() - m_Objects[j]->get_life());
 									delete m_Objects[j];
