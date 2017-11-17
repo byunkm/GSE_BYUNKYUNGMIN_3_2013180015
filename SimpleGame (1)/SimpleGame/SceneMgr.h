@@ -5,11 +5,13 @@
 #include "Renderer.h"
 #include "Object.h"
 
-#define MAXOBJECT 100
+#define MAXOBJECT 300
 #define OBJECT_BUILDING 0
 #define OBJECT_CHARACTER 1
 #define OBJECT_BULLET 2
 #define OBJECT_ARROW 3
+#define Team_Top 0
+#define Team_Bottom 1
 
 class SceneMgr
 {
@@ -17,8 +19,7 @@ public:
 	SceneMgr(int width, int height);
 	~SceneMgr();
 
-	int AddObject(float x, float y, int Object_type);
-	int Addbullet();
+	int AddObject(float x, float y, int Object_type, int team);
 
 	void UpdateAllObjects(float elapsedTime);
 	void DrawAllObjects();
@@ -27,18 +28,20 @@ public:
 
 	int BulletNum = 0; // 총알 수 새는 변수
 	int onwer = 0;     // 캐릭터 갯수
+	float topCharacter = 0;
+	float TopCharacter_delay = 0;
+	float BottomCharacter_delay = 0;
+
 private:
 	Renderer *renderer;
 
 	Object *m_Objects[MAXOBJECT];
-	Object *m_bullet[MAXOBJECT];
 	
 	int id=0;
 	bool Shoot = true;
 	bool ArrowShoot = true;
 	bool term = true;
-	
-	float time = 0;
+
 
 	int m_windowWidth;
 	int m_windowHeight;

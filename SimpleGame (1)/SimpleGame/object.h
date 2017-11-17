@@ -5,7 +5,7 @@ class Object
 {
 
 public:
-	Object(float x, float y, int type);
+	Object(float x, float y, int type, int team);
 	~Object();
 
 private:
@@ -25,9 +25,12 @@ private:
 	float m_lifeTime;
 
 	float Arrow_delay;
+	float TopBullet_delay;
+	float BottomBullet_delay;
 
 	int Object_type;
 	int Object_ID;
+	int team;
 public:
 
 	float get_x() { return m_x; }
@@ -46,9 +49,13 @@ public:
 	float get_life() { return m_life; }
 	float get_lifetime() { return m_lifeTime; }
 	float get_Arrow_delay(){ return Arrow_delay; }
+	float get_TopBullet_delay() { return TopBullet_delay; }
+	float get_BottomBullet_delay() { return BottomBullet_delay; }
 
 	int get_type() { return Object_type; }
 	int get_ID() { return Object_ID; }
+	int get_team() { return team; }
+
 public:
 	void set_x(float input) { m_x = input; }
 	void set_y(float input) { m_y = input; }
@@ -67,7 +74,14 @@ public:
 
 	void set_type(int input) { Object_type = input; }
 	void set_ID(int input) { Object_ID = input; }
+	void set_team(int input) { team = input; }
+	
 	void set_Arrow_delay(float input) { Arrow_delay = input; }
+	void set_TopBullet_delay(float input) { TopBullet_delay = input; }
+	void set_BottomBullet_delay(float input) { BottomBullet_delay = input; }
+	
+
+	
 public:
 	void Update(float elapsedTime);
 };

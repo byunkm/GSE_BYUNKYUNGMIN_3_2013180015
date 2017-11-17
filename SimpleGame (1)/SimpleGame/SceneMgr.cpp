@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "SceneMgr.h"
 
-GLuint Texture_Num = 0;
+GLuint Turret = 0;
+GLuint colony = 0;
+
 SceneMgr::SceneMgr(int width, int height)
 {
 	renderer = new Renderer(width, height);
@@ -11,11 +13,21 @@ SceneMgr::SceneMgr(int width, int height)
 	for (int i = 0; i < MAXOBJECT; i++)
 	{
 		m_Objects[i] = NULL;
-		m_bullet[i] = NULL;
 	}
 
 	char file_path[] = "terret.png";
-	Texture_Num = renderer->CreatePngTexture(file_path);
+	char file_path2[] = "colony.png";
+	Turret = renderer->CreatePngTexture(file_path);
+	colony = renderer->CreatePngTexture(file_path2);
+
+	AddObject(0, 350, OBJECT_BUILDING, Team_Top);
+	AddObject(-200, 300, OBJECT_BUILDING, Team_Top);
+	AddObject(200, 300, OBJECT_BUILDING, Team_Top);
+
+	AddObject(0, -350, OBJECT_BUILDING, Team_Bottom);
+	AddObject(-200, -300, OBJECT_BUILDING, Team_Bottom);
+	AddObject(200, -300, OBJECT_BUILDING, Team_Bottom);
+
 }
 
 void SceneMgr::DrawAllObjects()
@@ -26,7 +38,7 @@ void SceneMgr::DrawAllObjects()
 	{
 		if (m_Objects[i] != NULL)
 		{
-			if (m_Objects[i]->get_type() == OBJECT_BUILDING)
+			if (m_Objects[i]->get_type() == OBJECT_BUILDING && m_Objects[i]->get_team() == Team_Top)
 			{
 				renderer->DrawTexturedRect(
 					m_Objects[i]->get_x(),
@@ -37,9 +49,24 @@ void SceneMgr::DrawAllObjects()
 					m_Objects[i]->get_colorG(),
 					m_Objects[i]->get_colorB(),
 					m_Objects[i]->get_colorA(),
-					Texture_Num
+					colony
+				);
+			}  
+			if (m_Objects[i]->get_type() == OBJECT_BUILDING && m_Objects[i]->get_team() == Team_Bottom)
+			{
+				renderer->DrawTexturedRect(
+					m_Objects[i]->get_x(),
+					m_Objects[i]->get_y(),
+					0,
+					m_Objects[i]->get_size(),
+					m_Objects[i]->get_colorR(),
+					m_Objects[i]->get_colorG(),
+					m_Objects[i]->get_colorB(),
+					m_Objects[i]->get_colorA(),
+					Turret
 				);
 			}
+
 			else
 			{
 				renderer->DrawSolidRect(
@@ -54,20 +81,6 @@ void SceneMgr::DrawAllObjects()
 				);
 			}
 		}
-
-		if (m_bullet[i] != NULL)
-		{
-			renderer->DrawSolidRect(
-				m_bullet[i]->get_x(),
-				m_bullet[i]->get_y(),
-				0,
-				m_bullet[i]->get_size(),
-				m_bullet[i]->get_colorR(),
-				m_bullet[i]->get_colorG(),
-				m_bullet[i]->get_colorB(),
-				m_bullet[i]->get_colorA()
-			);
-		}
 	}
 }
 
@@ -79,46 +92,21 @@ SceneMgr::~SceneMgr()
 			delete m_Objects[i];
 			m_Objects[i] = NULL;
 		}
-
-		if (m_bullet[i] != NULL)
-		{
-			delete m_bullet[i];
-			m_bullet[i] = NULL;
-		}
 	}
 	// 혹시라도 남아있다면 제거
 }
 
-int SceneMgr::AddObject(float x, float y, int Object_type)
-{
-	if (Object_type != OBJECT_BULLET)
-	{
-		for (int i = 0; i < MAXOBJECT; i++)
-		{
-			if (m_Objects[i] == NULL)
-			{
-				m_Objects[i] = new Object(x, y, Object_type);
-				return i;
-			}
-		}
-		return -1;
-	}
-}
-int SceneMgr::Addbullet()
+int SceneMgr::AddObject(float x, float y, int Object_type, int team)
 {
 	for (int i = 0; i < MAXOBJECT; i++)
 	{
-		if (m_Objects[0] != NULL && m_Objects[0]->get_type() == OBJECT_BUILDING)
+		if (m_Objects[i] == NULL)
 		{
-			if (m_bullet[i] == NULL && BulletNum <= 99) // 총알은 100개까지 생성
-			{
-				m_bullet[BulletNum] = new Object(m_Objects[0]->get_x(), m_Objects[0]->get_y(), OBJECT_BULLET);
-				BulletNum += 1;
-				return i;
-			}
+			m_Objects[i] = new Object(x, y, Object_type, team);
+			return i;
 		}
 	}
-	return -1;
+	return -1;	
 }
 
 
@@ -126,58 +114,88 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 {
 	Collision();
 	float elapsedTimeInSecond = elapsedTime / 1000.f;
-	time += elapsedTimeInSecond;
-	if (time >= 0.5f)
-	{
-		term = false;
-		time = 0.f;
-	}
-	else 
-	{
-		term = true;
-		Shoot = true; 
-		ArrowShoot = true;
-	}
-	//// 0.5초에 한발씩 쏘기 위한 변수 설정
-	
+	TopCharacter_delay += elapsedTimeInSecond;
+	BottomCharacter_delay += elapsedTimeInSecond;
 
 	for (int i = 0; i < MAXOBJECT; i++)
 	{
 		if (m_Objects[i] != NULL)
 		{
-			if (m_Objects[i]->get_lifetime() < 0.0001f || m_Objects[i]->get_life() <= 0.0001f) // 시간과 라이프에 따른 오브젝트 제거
+			if (m_Objects[i]->get_lifetime() < 0.0001f || m_Objects[i]->get_life() <= 0.0001f)
 			{
-				if (m_Objects[i]->get_type() == OBJECT_CHARACTER)
-					onwer -= 1;
 				delete m_Objects[i];
 				m_Objects[i] = NULL;
 			}
+			// 시간과 라이프에 따른 오브젝트 제거
 
 			else
 			{
 				m_Objects[i]->Update(elapsedTime);
-				if (m_Objects[i]->get_type() == OBJECT_CHARACTER) // 오브젝트의 타입이 캐릭터일때
+				if (m_Objects[i]->get_type() == OBJECT_BUILDING) // 오브젝트의 타입이 빌딩 일때
 				{
-					if (m_Objects[i]->get_Arrow_delay() > 0.5f)   // 화살 발사 간격
+					if (m_Objects[i]->get_TopBullet_delay() > 10.0f)  
 					{
-						int arrow_ID = AddObject(m_Objects[i]->get_x(), m_Objects[i]->get_y(), OBJECT_ARROW); // 화살이 오브젝트 배열의 몇번째에 들어가는지 저장.
-						m_Objects[i]->set_Arrow_delay(0.f);
-						m_Objects[i]->set_ID(i);        // 부모 캐릭터에 아이디 부여
-						m_Objects[arrow_ID]->set_ID(i); // 화살에 부모 캐릭터의 아이디 부여
+						if (m_Objects[i]->get_team() == Team_Top)
+						{
+							AddObject(m_Objects[i]->get_x(), m_Objects[i]->get_y(), OBJECT_BULLET, Team_Top); 
+							m_Objects[i]->set_TopBullet_delay(0.f);
+						}
+					}
+
+					if (m_Objects[i]->get_BottomBullet_delay() > 10.0f)
+					{
+						if (m_Objects[i]->get_team() == Team_Bottom)
+						{
+							int arrow_ID = AddObject(m_Objects[i]->get_x(), m_Objects[i]->get_y(), OBJECT_BULLET, Team_Bottom); 
+							m_Objects[i]->set_BottomBullet_delay(0.f);
+						}
 					}
 				}
-			}
-
-			if (term == false && Shoot == true)
-			{
-				Addbullet();	//0.5초간격 총알 추가
-				Shoot = false;
+				//총알
+				if (m_Objects[i]->get_type() == OBJECT_CHARACTER) // 오브젝트 타입이 캐릭터일때
+				{
+					if (m_Objects[i]->get_Arrow_delay() > 3.0f)
+					{
+						if (m_Objects[i]->get_team() == Team_Top)
+						{
+							int arrow_ID = AddObject(m_Objects[i]->get_x(), m_Objects[i]->get_y(), OBJECT_ARROW, Team_Top);  
+							m_Objects[i]->set_Arrow_delay(0.f);
+							m_Objects[i]->set_ID(i);
+							m_Objects[arrow_ID]->set_ID(i);
+						}
+						if (m_Objects[i]->get_team() == Team_Bottom)
+						{
+							int arrow_ID = AddObject(m_Objects[i]->get_x(), m_Objects[i]->get_y(), OBJECT_ARROW, Team_Bottom);
+							m_Objects[i]->set_Arrow_delay(0.f);
+							m_Objects[i]->set_ID(i);
+							m_Objects[arrow_ID]->set_ID(i);
+						}
+					}
+				}
+				//화살
 			}
 		}
+	}
 
-		if (m_bullet[i] != NULL)										    //총알이 존재하면
+	
+	for (int i = 0; i < MAXOBJECT; i++)
+	{
+		if (m_Objects[i] == NULL)
 		{
-			m_bullet[i]->Update(elapsedTime);								// 총알 업데이트
+			if (TopCharacter_delay >= 5.0f)										// 북쪽 캐릭터의 생성 주기 5.0초
+ 			{
+				default_random_engine dre;										// 랜덤 엔진
+				uniform_int_distribution<int> yPos(100, 400);					// y 좌표값의 제한( 북쪽지역에서만 생성)
+				dre.seed(time(NULL));
+
+				default_random_engine dre2;
+				uniform_int_distribution<int> xPos(-250, 250);
+				dre.seed(time(NULL));
+
+				AddObject(xPos(dre2), yPos(dre), OBJECT_CHARACTER, Team_Top);	// 북쪽 지역 캐릭터의 생성
+				TopCharacter_delay = 0.f;
+			}
+			// 북쪽 팀 캐릭터 생성
 		}
 	}
 }
@@ -210,15 +228,12 @@ void SceneMgr::Collision()
 					maxX1 = m_Objects[j]->get_x() + m_Objects[j]->get_size() / 2.f;
 					maxY1 = m_Objects[j]->get_y() + m_Objects[j]->get_size() / 2.f;
 				
-					if (m_Objects[i]->get_type() != m_Objects[j]->get_type())								 // 타입이 달라야 충돌체크를 실행한다
+					if (m_Objects[i]->get_type() != m_Objects[j]->get_type() && m_Objects[i]->get_team() != m_Objects[j]->get_team()) // 팀과 타입이 달라야 진행
 					{
 						if (CollisionCheck(minX, minY, maxX, maxY, minX1, minY1, maxX1, maxY1))
 						{
 							if (m_Objects[i]->get_type() == OBJECT_BUILDING)								 // 오브젝트 타입이 빌딩이라면
 							{
-								if (m_Objects[j]->get_type() == OBJECT_CHARACTER)
-									onwer -= 1;
-
 								m_Objects[i]->set_life(m_Objects[i]->get_life() - m_Objects[j]->get_life()); // 빌딩의 hp에서 플레이어의 hp를 뺀다
 								delete m_Objects[j];														 // 빌딩과 부딪힌 오브젝트의 삭제
 								m_Objects[j] = NULL;
@@ -233,36 +248,6 @@ void SceneMgr::Collision()
 									m_Objects[j] = NULL;
 								}
 							}
-						}
-					}
-				}
-
-				if (m_bullet[j] != NULL) // 총알이 있을때 만 진행
-				{
-					float minX, minY;
-					float maxX, maxY;
-
-					float minBX, minBY;
-					float maxBX, maxBY;
-
-					minX = m_Objects[i]->get_x() - m_Objects[i]->get_size() / 2.f;
-					minY = m_Objects[i]->get_y() - m_Objects[i]->get_size() / 2.f;
-					maxX = m_Objects[i]->get_x() + m_Objects[i]->get_size() / 2.f;
-					maxY = m_Objects[i]->get_y() + m_Objects[i]->get_size() / 2.f;
-
-					minBX = m_bullet[j]->get_x() - m_bullet[j]->get_size() / 2.f;
-					minBY = m_bullet[j]->get_y() - m_bullet[j]->get_size() / 2.f;
-					maxBX = m_bullet[j]->get_x() + m_bullet[j]->get_size() / 2.f;
-					maxBY = m_bullet[j]->get_y() + m_bullet[j]->get_size() / 2.f;
-
-
-					if (CollisionCheck(minX, minY, maxX, maxY, minBX, minBY, maxBX, maxBY))				// 총알과 캐릭터 충돌 체크
-					{
-						if (m_Objects[i]->get_type() == OBJECT_CHARACTER || m_Objects[i]->get_type() == OBJECT_ARROW)
-						{
-							m_Objects[i]->set_life(m_Objects[i]->get_life() - m_bullet[j]->get_life()); // 플레이어 life - 총알 life
-							delete m_bullet[j];															// 총알삭제
-							m_bullet[j] = NULL;
 						}
 					}
 				}

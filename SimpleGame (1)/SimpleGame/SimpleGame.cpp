@@ -24,11 +24,10 @@ DWORD g_prevTime = 0;
 
 bool LeftButtonDown = false;
 bool RightButtonDown = false;
-bool Build = false;
 
 void RenderScene(void)
 {
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	DWORD currTime = timeGetTime();
@@ -66,28 +65,24 @@ void MouseInput(int button, int state, int x, int y)
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_UP)
 	{
 		if (LeftButtonDown)
-		{
-			if (Build == true && Scene->onwer <= 10) // 건물이 건설 완료 되어야 캐릭터를 생성시킬 수 있다.
+		{	
+			if (Scene->BottomCharacter_delay > 7.0f)
 			{
-				Scene->AddObject(x - 250, -y + 250, OBJECT_CHARACTER);
-				Scene->onwer += 1;
+				if (-y + 400 < 0) // 남쪽에서만 생성 수 있도록 함
+				{
+					Scene->AddObject(x - 250, -y + 400, OBJECT_CHARACTER, Team_Bottom);     // 캐릭터 생성
+					Scene->BottomCharacter_delay = 0;										// 쿨타임 초기화
+				}
+				else
+					cout << "생성할 수 없는 지역입니다." << endl;
 			}
+			else
+				cout << "캐릭터 생성 쿨타임 진행중" << "\t" << 7.0f - Scene->BottomCharacter_delay << "초 남음" << endl; // 쿨타임 알림
 		}
 		LeftButtonDown = false;
 	}
 
-	if (button == GLUT_RIGHT_BUTTON && state == GLUT_UP)
-	{
-		if (RightButtonDown)
-		{
-			if (Build == false) // 건물은 한 채만 지을 수 있다. 파괴될경우 재생성 불가
-			{
-				Scene->AddObject(x - 250, -y + 250, OBJECT_BUILDING);
-				Build = true;
-			}
-		}
-		RightButtonDown = false;
-	}
+
 	RenderScene();
 }
 
@@ -107,7 +102,7 @@ int main(int argc, char **argv)
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(0, 0);
-	glutInitWindowSize(500, 500);
+	glutInitWindowSize(500, 800);
 	glutCreateWindow("GAM SOGONG");
 
 	glewInit();
@@ -127,7 +122,7 @@ int main(int argc, char **argv)
 	glutMouseFunc(MouseInput);
 	glutSpecialFunc(SpecialKeyInput);
 
-	Scene = new SceneMgr(500, 500);
+	Scene = new SceneMgr(500, 800);
 	
 
 	g_prevTime = timeGetTime();
