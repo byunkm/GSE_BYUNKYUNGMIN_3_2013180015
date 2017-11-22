@@ -36,7 +36,7 @@ Object::Object(float x, float y, int type, int team)
 
 		set_size(10);
 
-		set_life(100.f);
+		set_life(10.f);
 		set_lifetime(1000.f);
 
 		set_type(type);
@@ -88,9 +88,9 @@ Object::Object(float x, float y, int type, int team)
 		set_vx((get_speed()*(((float)std::rand() / (float)RAND_MAX) - 0.5f)));
 		set_vy((get_speed()*(((float)std::rand() / (float)RAND_MAX) - 0.5f)));
 
-		set_size(3);
+		set_size(2);
 
-		set_life(20.f);
+		set_life(10.f);
 		set_lifetime(1000.f);
 
 		set_type(type);
