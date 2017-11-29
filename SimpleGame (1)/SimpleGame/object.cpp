@@ -17,10 +17,10 @@ Object::Object(float x, float y, int type, int team)
 		set_vy(0);
 
 		set_size(100);
-		set_colorR(1); set_colorG(1); set_colorB(1); set_colorA(0);
+		set_colorR(1); set_colorG(1); set_colorB(1); set_colorA(1);
 
-		set_life(500.f);
-		set_lifetime(10000000.0f);
+		set_life(BUILDING_LIFE);
+		set_lifetime(LIFE);
 		set_type(type);
 		set_team(team);
 	}
@@ -36,8 +36,8 @@ Object::Object(float x, float y, int type, int team)
 
 		set_size(10);
 
-		set_life(10.f);
-		set_lifetime(1000.f);
+		set_life(CHARACTER_LIFE);
+		set_lifetime(LIFE);
 
 		set_type(type);
 	    set_team(team);
@@ -62,8 +62,8 @@ Object::Object(float x, float y, int type, int team)
 		set_vy((get_speed()*(((float)std::rand() / (float)RAND_MAX) - 0.5f)));
 
 		set_size(2);
-		set_life(20.f);
-		set_lifetime(10000000.f);
+		set_life(BULLET_LIFE);
+		set_lifetime(LIFE);
 
 		set_type(type);
 		set_team(team);
@@ -90,8 +90,8 @@ Object::Object(float x, float y, int type, int team)
 
 		set_size(2);
 
-		set_life(10.f);
-		set_lifetime(1000.f);
+		set_life(ARROW_LIFE);
+		set_lifetime(LIFE);
 
 		set_type(type);
 		set_team(team);
@@ -145,7 +145,8 @@ void Object::Update(float elapsedTime)
 
 	if (get_lifetime() > 0.f)
 	{
-		set_lifetime(get_lifetime() - 0.5f);
+		if(get_lifetime() != LIFE)
+			set_lifetime(get_lifetime() - 0.5f);
 	}
 
 }

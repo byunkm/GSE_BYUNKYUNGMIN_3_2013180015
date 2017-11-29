@@ -66,7 +66,7 @@ void MouseInput(int button, int state, int x, int y)
 	{
 		if (LeftButtonDown)
 		{	
-			if (Scene->BottomCharacter_delay > 7.0f)
+			if (Scene->BottomCharacter_delay > 1.0f)
 			{
 				if (-y + 400 < 0) // 남쪽에서만 생성 수 있도록 함
 				{

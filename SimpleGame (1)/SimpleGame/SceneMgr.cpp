@@ -17,14 +17,15 @@ SceneMgr::SceneMgr(int width, int height)
 
 	char file_path[] = "terret.png";
 	char file_path2[] = "colony.png";
+
 	Turret = renderer->CreatePngTexture(file_path);
 	colony = renderer->CreatePngTexture(file_path2);
 
-	AddObject(0, 350, OBJECT_BUILDING, Team_Top);
+	AddObject(0, 320, OBJECT_BUILDING, Team_Top);
 	AddObject(-200, 300, OBJECT_BUILDING, Team_Top);
 	AddObject(200, 300, OBJECT_BUILDING, Team_Top);
 
-	AddObject(0, -350, OBJECT_BUILDING, Team_Bottom);
+	AddObject(0, -320, OBJECT_BUILDING, Team_Bottom);
 	AddObject(-200, -300, OBJECT_BUILDING, Team_Bottom);
 	AddObject(200, -300, OBJECT_BUILDING, Team_Bottom);
 
@@ -32,7 +33,8 @@ SceneMgr::SceneMgr(int width, int height)
 
 void SceneMgr::DrawAllObjects()
 {
-	renderer->DrawSolidRect(0, 0, 0, m_windowWidth, 0, 0, 0, 0.4);
+	
+	renderer->DrawSolidRect(0, 0, 0, m_windowWidth, 0, 0, 0, 0.4, 0.5);
 
 	for (int i = 0; i < MAXOBJECT; i++)
 	{
@@ -40,7 +42,7 @@ void SceneMgr::DrawAllObjects()
 		{
 			if (m_Objects[i]->get_type() == OBJECT_BUILDING && m_Objects[i]->get_team() == Team_Top)
 			{
-				renderer->DrawTexturedRect(
+					renderer->DrawTexturedRect(
 					m_Objects[i]->get_x(),
 					m_Objects[i]->get_y(),
 					0,
@@ -49,9 +51,25 @@ void SceneMgr::DrawAllObjects()
 					m_Objects[i]->get_colorG(),
 					m_Objects[i]->get_colorB(),
 					m_Objects[i]->get_colorA(),
-					colony
+					colony,
+					0.1f
 				);
+					renderer->DrawSolidRectGauge(
+						m_Objects[i]->get_x(),
+						m_Objects[i]->get_y()+ 60,
+						0,
+						100,
+						5,
+						1,
+						0,
+						0,
+						m_Objects[i]->get_colorA(),
+						m_Objects[i]->get_life()/BUILDING_LIFE,
+						0.2
+				);
+				
 			}  
+			
 			if (m_Objects[i]->get_type() == OBJECT_BUILDING && m_Objects[i]->get_team() == Team_Bottom)
 			{
 				renderer->DrawTexturedRect(
@@ -63,22 +81,99 @@ void SceneMgr::DrawAllObjects()
 					m_Objects[i]->get_colorG(),
 					m_Objects[i]->get_colorB(),
 					m_Objects[i]->get_colorA(),
-					Turret
+					Turret,
+					0.1f
+				);
+				renderer->DrawSolidRectGauge(
+					m_Objects[i]->get_x(),
+					m_Objects[i]->get_y() + 60,
+					0,
+					100,
+					5,
+					0,
+					0,
+					1,
+					m_Objects[i]->get_colorA(),
+					m_Objects[i]->get_life() / BUILDING_LIFE,
+					0.2
 				);
 			}
 
 			else
 			{
-				renderer->DrawSolidRect(
-					m_Objects[i]->get_x(),
-					m_Objects[i]->get_y(),
-					0,
-					m_Objects[i]->get_size(),
-					m_Objects[i]->get_colorR(),
-					m_Objects[i]->get_colorG(),
-					m_Objects[i]->get_colorB(),
-					m_Objects[i]->get_colorA()
-				);
+				if (m_Objects[i]->get_type() == OBJECT_CHARACTER && m_Objects[i]->get_team() == Team_Top)
+				{
+					renderer->DrawSolidRect(
+						m_Objects[i]->get_x(),
+						m_Objects[i]->get_y(),
+						0,
+						m_Objects[i]->get_size(),
+						m_Objects[i]->get_colorR(),
+						m_Objects[i]->get_colorG(),
+						m_Objects[i]->get_colorB(),
+						m_Objects[i]->get_colorA(),
+						0.2f
+					);
+
+					renderer->DrawSolidRectGauge(
+						m_Objects[i]->get_x(),
+						m_Objects[i]->get_y() + 20,
+						0,
+						30,
+						5,
+						1,
+						0,
+						0,
+						m_Objects[i]->get_colorA(),
+						m_Objects[i]->get_life() / CHARACTER_LIFE,
+						0.2
+					);
+				}
+
+				if (m_Objects[i]->get_type() == OBJECT_CHARACTER && m_Objects[i]->get_team() == Team_Bottom)
+				{
+					renderer->DrawSolidRect(
+						m_Objects[i]->get_x(),
+						m_Objects[i]->get_y(),
+						0,
+						m_Objects[i]->get_size(),
+						m_Objects[i]->get_colorR(),
+						m_Objects[i]->get_colorG(),
+						m_Objects[i]->get_colorB(),
+						m_Objects[i]->get_colorA(),
+						0.2f
+					);
+
+					renderer->DrawSolidRectGauge(
+						m_Objects[i]->get_x(),
+						m_Objects[i]->get_y() + 20,
+						0,
+						30,
+						5,
+						0,
+						0,
+						1,
+						m_Objects[i]->get_colorA(),
+						m_Objects[i]->get_life() / CHARACTER_LIFE,
+						0.2
+					);
+				}
+				if (m_Objects[i]->get_type() == OBJECT_BULLET
+					|| m_Objects[i]->get_type() == OBJECT_ARROW)
+				{
+					renderer->DrawSolidRect(
+						m_Objects[i]->get_x(),
+						m_Objects[i]->get_y(),
+						0,
+						m_Objects[i]->get_size(),
+						m_Objects[i]->get_colorR(),
+						m_Objects[i]->get_colorG(),
+						m_Objects[i]->get_colorB(),
+						m_Objects[i]->get_colorA(),
+						0.3f
+					);
+				}
+
 			}
 		}
 	}
@@ -127,7 +222,7 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 				m_Objects[i] = NULL;
 			}
 			// 시간과 라이프에 따른 오브젝트 제거
-
+			
 			else
 			{
 				m_Objects[i]->Update(elapsedTime);
@@ -173,6 +268,8 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 					}
 				}
 				//화살
+
+			
 			}
 		}
 	}
@@ -206,6 +303,21 @@ void SceneMgr::Collision()
 	{
 		if (m_Objects[i] != NULL)
 		{
+			if (m_Objects[i]->get_type() == OBJECT_BULLET || m_Objects[i]->get_type() == OBJECT_ARROW)
+			{
+				if (m_Objects[i]->get_x() <= -250 || m_Objects[i]->get_x() >= 250
+					|| m_Objects[i]->get_y() <= -400 || m_Objects[i]->get_y() >= 400)
+				{
+					delete m_Objects[i];
+					m_Objects[i] = NULL;
+				}
+			}
+		}
+	}
+	for (int i = 0; i < MAXOBJECT; i++)
+	{
+		if (m_Objects[i] != NULL)
+		{
 			for (int j = 0; j < MAXOBJECT; j++)
 			{
 				if (i == j)
@@ -227,7 +339,7 @@ void SceneMgr::Collision()
 					minY1 = m_Objects[j]->get_y() - m_Objects[j]->get_size() / 2.f;
 					maxX1 = m_Objects[j]->get_x() + m_Objects[j]->get_size() / 2.f;
 					maxY1 = m_Objects[j]->get_y() + m_Objects[j]->get_size() / 2.f;
-				
+
 					if (m_Objects[i]->get_type() != m_Objects[j]->get_type() && m_Objects[i]->get_team() != m_Objects[j]->get_team()) // 팀과 타입이 달라야 진행
 					{
 						if (CollisionCheck(minX, minY, maxX, maxY, minX1, minY1, maxX1, maxY1))
