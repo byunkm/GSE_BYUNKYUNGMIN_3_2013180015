@@ -31,7 +31,11 @@ public:
 	float topCharacter = 0;
 	float TopCharacter_delay = 0;
 	float BottomCharacter_delay = 0;
+	float transform_time = 0;
 
+	float particle=0;
+	int transform = 0;
+	int transform2 = 0;
 private:
 	Renderer *renderer;
 

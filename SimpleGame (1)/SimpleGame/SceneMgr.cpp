@@ -3,6 +3,14 @@
 
 GLuint Turret = 0;
 GLuint colony = 0;
+GLuint Map_cb = 0;
+GLuint Player_bot = 0;
+GLuint Player_top = 0;
+
+GLuint Particle_1 = 0;
+GLuint Particle_2 = 0;
+float Particle_time = 0;
+
 
 SceneMgr::SceneMgr(int width, int height)
 {
@@ -17,9 +25,21 @@ SceneMgr::SceneMgr(int width, int height)
 
 	char file_path[] = "terret.png";
 	char file_path2[] = "colony.png";
+	char file_path3[] = "Cb.png";
+	char file_path4[] = "Player_bottom.png";
+	char file_path7[] = "Player_top.png";
+
+	char file_path5[] = "Particle1.png";
+	char file_path6[] = "Particle2.png";
+
 
 	Turret = renderer->CreatePngTexture(file_path);
 	colony = renderer->CreatePngTexture(file_path2);
+	Map_cb = renderer->CreatePngTexture(file_path3);
+	Player_bot = renderer->CreatePngTexture(file_path4);
+	Player_top = renderer->CreatePngTexture(file_path7);
+	Particle_1 = renderer->CreatePngTexture(file_path5);
+	Particle_2 = renderer->CreatePngTexture(file_path6);
 
 	AddObject(0, 320, OBJECT_BUILDING, Team_Top);
 	AddObject(-200, 300, OBJECT_BUILDING, Team_Top);
@@ -34,7 +54,7 @@ SceneMgr::SceneMgr(int width, int height)
 void SceneMgr::DrawAllObjects()
 {
 	
-	renderer->DrawSolidRect(0, 0, 0, m_windowWidth, 0, 0, 0, 0.4, 0.5);
+	renderer->DrawTexturedRect(0, 0, 0, 800, 1, 1, 1,1, Map_cb, 0.5);
 
 	for (int i = 0; i < MAXOBJECT; i++)
 	{
@@ -103,7 +123,7 @@ void SceneMgr::DrawAllObjects()
 			{
 				if (m_Objects[i]->get_type() == OBJECT_CHARACTER && m_Objects[i]->get_team() == Team_Top)
 				{
-					renderer->DrawSolidRect(
+					/*renderer->DrawSolidRect(
 						m_Objects[i]->get_x(),
 						m_Objects[i]->get_y(),
 						0,
@@ -113,6 +133,21 @@ void SceneMgr::DrawAllObjects()
 						m_Objects[i]->get_colorB(),
 						m_Objects[i]->get_colorA(),
 						0.2f
+					);*/
+					renderer->DrawTexturedRectSeq
+					(
+						m_Objects[i]->get_x(),
+						m_Objects[i]->get_y(),
+						0,
+						m_Objects[i]->get_size()+50,
+						m_Objects[i]->get_colorR(),
+						m_Objects[i]->get_colorG(),
+						m_Objects[i]->get_colorB(),
+						m_Objects[i]->get_colorA(),
+						Player_bot,
+						transform, 0,
+						4,4,
+						0.1
 					);
 
 					renderer->DrawSolidRectGauge(
@@ -132,7 +167,7 @@ void SceneMgr::DrawAllObjects()
 
 				if (m_Objects[i]->get_type() == OBJECT_CHARACTER && m_Objects[i]->get_team() == Team_Bottom)
 				{
-					renderer->DrawSolidRect(
+					/*renderer->DrawSolidRect(
 						m_Objects[i]->get_x(),
 						m_Objects[i]->get_y(),
 						0,
@@ -142,6 +177,22 @@ void SceneMgr::DrawAllObjects()
 						m_Objects[i]->get_colorB(),
 						m_Objects[i]->get_colorA(),
 						0.2f
+					);*/
+
+					renderer->DrawTexturedRectSeq
+					(
+						m_Objects[i]->get_x(),
+						m_Objects[i]->get_y(),
+						0,
+						m_Objects[i]->get_size() + 50,
+						m_Objects[i]->get_colorR(),
+						m_Objects[i]->get_colorG(),
+						m_Objects[i]->get_colorB(),
+						m_Objects[i]->get_colorA(),
+						Player_bot,
+						transform2, 3,
+						4, 4,
+						0.1
 					);
 
 					renderer->DrawSolidRectGauge(
@@ -172,8 +223,49 @@ void SceneMgr::DrawAllObjects()
 						m_Objects[i]->get_colorA(),
 						0.3f
 					);
-				}
 
+					if (m_Objects[i]->get_type() == OBJECT_BULLET)
+					{
+						if (m_Objects[i]->get_team() == Team_Top)
+						{
+							renderer->DrawParticle
+							(
+								m_Objects[i]->get_x(),
+								m_Objects[i]->get_y(),
+								0,
+								m_Objects[i]->get_size(),
+								m_Objects[i]->get_colorR(),
+								m_Objects[i]->get_colorG(),
+								m_Objects[i]->get_colorB(),
+								m_Objects[i]->get_colorA(),
+								0,
+								1,
+								Particle_1,
+								Particle_time
+							);
+						}
+
+						if (m_Objects[i]->get_team() == Team_Bottom)
+						{
+							renderer->DrawParticle
+							(
+								m_Objects[i]->get_x(),
+								m_Objects[i]->get_y(),
+								0,
+								m_Objects[i]->get_size(),
+								m_Objects[i]->get_colorR(),
+								m_Objects[i]->get_colorG(),
+								m_Objects[i]->get_colorB(),
+								m_Objects[i]->get_colorA(),
+								0,
+								-1,
+								Particle_2,
+								Particle_time
+							);
+						}
+
+					}
+				}
 			}
 		}
 	}
@@ -211,6 +303,8 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 	float elapsedTimeInSecond = elapsedTime / 1000.f;
 	TopCharacter_delay += elapsedTimeInSecond;
 	BottomCharacter_delay += elapsedTimeInSecond;
+	Particle_time += elapsedTimeInSecond;
+	transform_time += elapsedTimeInSecond;
 
 	for (int i = 0; i < MAXOBJECT; i++)
 	{
@@ -266,6 +360,15 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 							m_Objects[arrow_ID]->set_ID(i);
 						}
 					}
+
+					if (transform_time >= 0.1f)
+					{
+						transform += 1;
+						transform2 += 1;
+						transform = transform % 4;
+						transform2 = transform % 4;
+						transform_time = 0.f;
+					}
 				}
 				//È­»ì
 
@@ -299,6 +402,7 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 
 void SceneMgr::Collision()
 {
+	particle++;
 	for (int i = 0; i < MAXOBJECT; i++)
 	{
 		if (m_Objects[i] != NULL)
@@ -364,6 +468,7 @@ void SceneMgr::Collision()
 								}
 								else
 								{
+									
 									m_Objects[i]->set_life(m_Objects[i]->get_life() - m_Objects[j]->get_life());
 									delete m_Objects[j];
 									m_Objects[j] = NULL;

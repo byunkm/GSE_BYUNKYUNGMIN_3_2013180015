@@ -61,7 +61,7 @@ Object::Object(float x, float y, int type, int team)
 		set_vx((get_speed()*(((float)std::rand() / (float)RAND_MAX) - 0.5f)));
 		set_vy((get_speed()*(((float)std::rand() / (float)RAND_MAX) - 0.5f)));
 
-		set_size(2);
+		set_size(5);
 		set_life(BULLET_LIFE);
 		set_lifetime(LIFE);
 
@@ -88,7 +88,7 @@ Object::Object(float x, float y, int type, int team)
 		set_vx((get_speed()*(((float)std::rand() / (float)RAND_MAX) - 0.5f)));
 		set_vy((get_speed()*(((float)std::rand() / (float)RAND_MAX) - 0.5f)));
 
-		set_size(2);
+		set_size(5);
 
 		set_life(ARROW_LIFE);
 		set_lifetime(LIFE);
