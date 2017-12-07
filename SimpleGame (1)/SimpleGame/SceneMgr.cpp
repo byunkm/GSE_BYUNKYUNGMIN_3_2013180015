@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "SceneMgr.h"
-
+#include "Sound.h"
 GLuint Turret = 0;
 GLuint colony = 0;
 GLuint Map_cb = 0;
@@ -10,11 +10,12 @@ GLuint Player_top = 0;
 GLuint Particle_1 = 0;
 GLuint Particle_2 = 0;
 float Particle_time = 0;
-
+int sound_index = 0;
 
 SceneMgr::SceneMgr(int width, int height)
 {
 	renderer = new Renderer(width, height);
+	m_Sound = new Sound();
 	m_windowWidth = width;
 	m_windowHeight = height;
 
@@ -31,8 +32,10 @@ SceneMgr::SceneMgr(int width, int height)
 
 	char file_path5[] = "Particle1.png";
 	char file_path6[] = "Particle2.png";
-
-
+	char file_path8[] = "Terran.mp3";
+	
+	sound_index = m_Sound->CreateSound(file_path8);
+	m_Sound->PlaySound(sound_index, true, 0.2f);
 	Turret = renderer->CreatePngTexture(file_path);
 	colony = renderer->CreatePngTexture(file_path2);
 	Map_cb = renderer->CreatePngTexture(file_path3);
@@ -56,6 +59,8 @@ void SceneMgr::DrawAllObjects()
 	
 	renderer->DrawTexturedRect(0, 0, 0, 800, 1, 1, 1,1, Map_cb, 0.5);
 
+	renderer->DrawText(-90, 0, GLUT_BITMAP_TIMES_ROMAN_24, 1.f, 1.f, 1.f, "2013180015 byunkm");
+	
 	for (int i = 0; i < MAXOBJECT; i++)
 	{
 		if (m_Objects[i] != NULL)

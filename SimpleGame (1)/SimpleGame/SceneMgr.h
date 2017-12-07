@@ -1,8 +1,8 @@
 #pragma once
 #include <cstdlib>
 #include <iostream>
-
 #include "Renderer.h"
+#include "Sound.h"
 #include "Object.h"
 
 #define MAXOBJECT 300
@@ -38,6 +38,7 @@ public:
 	int transform2 = 0;
 private:
 	Renderer *renderer;
+	Sound *m_Sound;
 
 	Object *m_Objects[MAXOBJECT];
 	
