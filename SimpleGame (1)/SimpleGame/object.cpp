@@ -123,8 +123,12 @@ void Object::Update(float elapsedTime)
 	Arrow_delay += elapsedTimeInSecond;
 	TopBullet_delay += elapsedTimeInSecond;
 	BottomBullet_delay += elapsedTimeInSecond;
-	Particle_time_B += elapsedTimeInSecond;
 
+	
+	Particle_time_B += elapsedTimeInSecond *0.5;
+
+	
+	
 	if (get_x() > 250)
 	{
 		set_vx(-get_vx());

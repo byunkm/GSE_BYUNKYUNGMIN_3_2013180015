@@ -4,7 +4,7 @@
 
 Renderer::Renderer(int windowSizeX, int windowSizeY)
 {
-	m_ParticleCount = 10;
+	m_ParticleCount = 100;
 	m_ParticleVertexCount = m_ParticleCount * 10;
 
 
