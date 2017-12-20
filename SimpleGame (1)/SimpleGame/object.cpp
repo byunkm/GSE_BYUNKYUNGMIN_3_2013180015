@@ -7,7 +7,6 @@ Object::Object(float x, float y, int type, int team)
 	TopBullet_delay = 0.f;
 	BottomBullet_delay = 0.f;
 
-	
 	if (type == 0) // °Ç¹°
 	{
 		set_x(x);
@@ -56,10 +55,9 @@ Object::Object(float x, float y, int type, int team)
 	{
 		set_x(x);
 		set_y(y);
-		set_speed(600);
+		set_speed(300);
 
-		set_vx((get_speed()*(((float)std::rand() / (float)RAND_MAX) - 0.5f)));
-		set_vy((get_speed()*(((float)std::rand() / (float)RAND_MAX) - 0.5f)));
+		set_vx((get_speed()*((float)std::rand() / (float)RAND_MAX - 0.5f)));
 
 		set_size(5);
 		set_life(BULLET_LIFE);
@@ -71,10 +69,13 @@ Object::Object(float x, float y, int type, int team)
 		if (team == 0) // Top
 		{
 			set_colorR(1); set_colorG(0); set_colorB(0); set_colorA(1);
+			set_vy((get_speed()*-((float)(std::rand()) / (float)RAND_MAX)));
+
 		}
 		else if (team == 1)
 		{
 			set_colorR(0); set_colorG(0); set_colorB(1); set_colorA(1);
+			set_vy((get_speed()*((float)(std::rand()) / (float)RAND_MAX)));
 
 		}
 	}
@@ -83,7 +84,7 @@ Object::Object(float x, float y, int type, int team)
 	{
 		set_x(x);
 		set_y(y);
-		set_speed(100);
+		set_speed(300);
 
 		set_vx((get_speed()*(((float)std::rand() / (float)RAND_MAX) - 0.5f)));
 		set_vy((get_speed()*(((float)std::rand() / (float)RAND_MAX) - 0.5f)));
@@ -122,6 +123,7 @@ void Object::Update(float elapsedTime)
 	Arrow_delay += elapsedTimeInSecond;
 	TopBullet_delay += elapsedTimeInSecond;
 	BottomBullet_delay += elapsedTimeInSecond;
+	Particle_time_B += elapsedTimeInSecond;
 
 	if (get_x() > 250)
 	{

@@ -36,7 +36,6 @@ void RenderScene(void)
 
 	Scene->UpdateAllObjects((float)elapsedTime);
 	Scene->DrawAllObjects();
-
 	glutSwapBuffers();
 }
 

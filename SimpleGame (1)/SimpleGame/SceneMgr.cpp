@@ -6,10 +6,13 @@ GLuint colony = 0;
 GLuint Map_cb = 0;
 GLuint Player_bot = 0;
 GLuint Player_top = 0;
+GLuint Star = 0;
 
 GLuint Particle_1 = 0;
 GLuint Particle_2 = 0;
 float Particle_time = 0;
+float Particle_time2 ;
+float Particle_level = 0;
 int sound_index = 0;
 
 SceneMgr::SceneMgr(int width, int height)
@@ -33,7 +36,8 @@ SceneMgr::SceneMgr(int width, int height)
 	char file_path5[] = "Particle1.png";
 	char file_path6[] = "Particle2.png";
 	char file_path8[] = "Terran.mp3";
-	
+	char file_path9[] = "Star.png";
+
 	sound_index = m_Sound->CreateSound(file_path8);
 	m_Sound->PlaySound(sound_index, true, 0.2f);
 	Turret = renderer->CreatePngTexture(file_path);
@@ -43,6 +47,7 @@ SceneMgr::SceneMgr(int width, int height)
 	Player_top = renderer->CreatePngTexture(file_path7);
 	Particle_1 = renderer->CreatePngTexture(file_path5);
 	Particle_2 = renderer->CreatePngTexture(file_path6);
+	Star = renderer->CreatePngTexture(file_path9);
 
 	AddObject(0, 320, OBJECT_BUILDING, Team_Top);
 	AddObject(-200, 300, OBJECT_BUILDING, Team_Top);
@@ -51,6 +56,8 @@ SceneMgr::SceneMgr(int width, int height)
 	AddObject(0, -320, OBJECT_BUILDING, Team_Bottom);
 	AddObject(-200, -300, OBJECT_BUILDING, Team_Bottom);
 	AddObject(200, -300, OBJECT_BUILDING, Team_Bottom);
+
+	
 
 }
 
@@ -61,6 +68,8 @@ void SceneMgr::DrawAllObjects()
 
 	renderer->DrawText(-90, 0, GLUT_BITMAP_TIMES_ROMAN_24, 1.f, 1.f, 1.f, "2013180015 byunkm");
 	
+	renderer->DrawParticleClimate(0, 0, 0, 1, 1, 1, 1, 1, -0.1, -0.1, Star, Particle_time, 0.01);
+
 	for (int i = 0; i < MAXOBJECT; i++)
 	{
 		if (m_Objects[i] != NULL)
@@ -245,8 +254,9 @@ void SceneMgr::DrawAllObjects()
 								m_Objects[i]->get_colorA(),
 								0,
 								1,
-								Particle_1,
-								Particle_time
+								0.1,
+								m_Objects[i]->Particle_time_B,
+								0.1
 							);
 						}
 
@@ -265,7 +275,9 @@ void SceneMgr::DrawAllObjects()
 								0,
 								-1,
 								Particle_2,
-								Particle_time
+								m_Objects[i]->Particle_time_B,
+								0.1
+
 							);
 						}
 
@@ -309,6 +321,7 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 	TopCharacter_delay += elapsedTimeInSecond;
 	BottomCharacter_delay += elapsedTimeInSecond;
 	Particle_time += elapsedTimeInSecond;
+	Particle_level += elapsedTimeInSecond;
 	transform_time += elapsedTimeInSecond;
 
 	for (int i = 0; i < MAXOBJECT; i++)
@@ -327,7 +340,7 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 				m_Objects[i]->Update(elapsedTime);
 				if (m_Objects[i]->get_type() == OBJECT_BUILDING) // 오브젝트의 타입이 빌딩 일때
 				{
-					if (m_Objects[i]->get_TopBullet_delay() > 10.0f)  
+					if (m_Objects[i]->get_TopBullet_delay() > 1.0f)  
 					{
 						if (m_Objects[i]->get_team() == Team_Top)
 						{
@@ -336,7 +349,7 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 						}
 					}
 
-					if (m_Objects[i]->get_BottomBullet_delay() > 10.0f)
+					if (m_Objects[i]->get_BottomBullet_delay() > 1.0f)
 					{
 						if (m_Objects[i]->get_team() == Team_Bottom)
 						{

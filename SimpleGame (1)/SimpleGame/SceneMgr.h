@@ -34,8 +34,12 @@ public:
 	float transform_time = 0;
 
 	float particle=0;
+	float Particle_time2 = 0;
+
 	int transform = 0;
 	int transform2 = 0;
+
+	
 private:
 	Renderer *renderer;
 	Sound *m_Sound;

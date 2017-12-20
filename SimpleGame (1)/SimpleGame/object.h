@@ -27,11 +27,14 @@ private:
 	float Arrow_delay;
 	float TopBullet_delay;
 	float BottomBullet_delay;
+	float Dir[2];
 
 	int Object_type;
 	int Object_ID;
 	int team;
 public:
+
+	float Particle_time_B = 0.f;
 
 	float get_x() { return m_x; }
 	float get_y() { return m_y; }
@@ -51,10 +54,16 @@ public:
 	float get_Arrow_delay(){ return Arrow_delay; }
 	float get_TopBullet_delay() { return TopBullet_delay; }
 	float get_BottomBullet_delay() { return BottomBullet_delay; }
-
+	float get_dirX() {
+		return Dir[0];
+	}
+	float get_dirY() {
+		return Dir[1];
+	}
 	int get_type() { return Object_type; }
 	int get_ID() { return Object_ID; }
 	int get_team() { return team; }
+	
 
 public:
 	void set_x(float input) { m_x = input; }
@@ -80,7 +89,11 @@ public:
 	void set_TopBullet_delay(float input) { TopBullet_delay = input; }
 	void set_BottomBullet_delay(float input) { BottomBullet_delay = input; }
 	
-
+	void SetDir0()
+	{
+		Dir[0] = get_vx() / get_speed();
+		Dir[1] = get_vy() / get_speed();
+	}
 	
 public:
 	void Update(float elapsedTime);
