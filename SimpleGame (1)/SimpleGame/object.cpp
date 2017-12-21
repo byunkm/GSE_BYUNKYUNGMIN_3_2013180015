@@ -55,7 +55,7 @@ Object::Object(float x, float y, int type, int team)
 	{
 		set_x(x);
 		set_y(y);
-		set_speed(300);
+		set_speed(350);
 
 		set_vx((get_speed()*((float)std::rand() / (float)RAND_MAX - 0.5f)));
 
