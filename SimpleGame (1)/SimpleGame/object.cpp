@@ -125,7 +125,7 @@ void Object::Update(float elapsedTime)
 	BottomBullet_delay += elapsedTimeInSecond;
 
 	
-	Particle_time_B += elapsedTimeInSecond *0.5;
+	Particle_time_B += elapsedTimeInSecond ;
 
 	
 	
