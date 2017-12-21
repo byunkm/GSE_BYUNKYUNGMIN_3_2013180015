@@ -252,9 +252,9 @@ void SceneMgr::DrawAllObjects()
 								m_Objects[i]->get_colorG(),
 								m_Objects[i]->get_colorB(),
 								m_Objects[i]->get_colorA(),
-								0,
-								1,
-								0.1,
+								-m_Objects[i]->get_vx() / m_Objects[i]->get_speed(),
+								-m_Objects[i]->get_vy() / m_Objects[i]->get_speed(),
+								Particle_1,
 								m_Objects[i]->Particle_time_B,
 								0.1
 							);
@@ -272,8 +272,8 @@ void SceneMgr::DrawAllObjects()
 								m_Objects[i]->get_colorG(),
 								m_Objects[i]->get_colorB(),
 								m_Objects[i]->get_colorA(),
-								0,
-								-1,
+								-m_Objects[i]->get_vx() / m_Objects[i]->get_speed(),
+								-(m_Objects[i]->get_vy() / m_Objects[i]->get_speed()),
 								Particle_2,
 								m_Objects[i]->Particle_time_B,
 								0.1
