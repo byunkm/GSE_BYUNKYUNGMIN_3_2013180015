@@ -5,8 +5,7 @@ class Object
 {
 
 public:
-	Object(float x, float y, int type, int team);
-
+	Object(float x, float y, int type, int team, bool status, bool Attack_type, bool Unit_type);
 
 	~Object();
 
@@ -32,13 +31,14 @@ private:
 	float Dir[2];
 
 	bool Status;
-	int Attack_type;
+	bool Attack_type;
+	bool Unit_type;
 
 	int Object_type;
 	int Object_ID;
 	int team;
-public:
 
+public:
 	float Particle_time_B = 0.f;
 
 	float get_x() { return m_x; }
@@ -65,6 +65,12 @@ public:
 	float get_dirY() {
 		return Dir[1];
 	}
+
+	bool get_Status(){ return Status; }
+	bool get_A_type() { return Attack_type; }
+	bool get_U_type() { return Unit_type; }
+
+
 	int get_type() { return Object_type; }
 	int get_ID() { return Object_ID; }
 	int get_team() { return team; }
@@ -85,15 +91,21 @@ public:
 
 	void set_life(float input) { m_life = input; }
 	void set_lifetime(float input) { m_lifeTime = input; }
+	void set_Status(bool input) { Status = input;}
+	void set_A_type(bool input) { Attack_type = input; }
+	void set_U_type(bool input) { Unit_type = input; }
 
 	void set_type(int input) { Object_type = input; }
 	void set_ID(int input) { Object_ID = input; }
 	void set_team(int input) { team = input; }
-	
+
 	void set_Arrow_delay(float input) { Arrow_delay = input; }
 	void set_TopBullet_delay(float input) { TopBullet_delay = input; }
 	void set_BottomBullet_delay(float input) { BottomBullet_delay = input; }
 	
+
+
+
 	void SetDir0()
 	{
 		Dir[0] = get_vx() / get_speed();
@@ -101,6 +113,6 @@ public:
 	}
 	
 public:
-	void Update(float elapsedTime);
+	void Update(float elapsedTime, bool status);
 };
 

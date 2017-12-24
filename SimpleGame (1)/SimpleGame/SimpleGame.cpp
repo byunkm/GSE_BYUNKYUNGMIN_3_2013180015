@@ -19,6 +19,7 @@ but WITHOUT ANY WARRANTY.
 #include "Dependencies\freeglut.h"
 
 SceneMgr *Scene = NULL;
+Sound *m_Sound = NULL;
 
 DWORD g_prevTime = 0;
 
@@ -69,18 +70,36 @@ void MouseInput(int button, int state, int x, int y)
 			{
 				if (-y + 400 < 0) // 남쪽에서만 생성 수 있도록 함
 				{
-					Scene->AddObject(x - 250, -y + 400, OBJECT_CHARACTER, Team_Bottom);     // 캐릭터 생성
-					Scene->BottomCharacter_delay = 0;										// 쿨타임 초기화
+					Scene->AddObject(x - 250, -y + 400, OBJECT_CHARACTER, Team_Bottom, false, ATTACK_GROUND, UNIT_GROUND);     // 캐릭터 생성
+					Scene->BottomCharacter_delay = 0;
+					//m_Sound->PlaySound(Birth_Sound, false, 0.5f);
 				}
 				else
 					cout << "생성할 수 없는 지역입니다." << endl;
 			}
-			else
-				cout << "캐릭터 생성 쿨타임 진행중" << "\t" << 7.0f - Scene->BottomCharacter_delay << "초 남음" << endl; // 쿨타임 알림
 		}
 		LeftButtonDown = false;
 	}
 
+	if (button == GLUT_RIGHT_BUTTON && state == GLUT_UP)
+	{
+		if (RightButtonDown)
+		{
+			if (Scene->BottomCharacter2_delay > 1.0f)
+			{
+				if (-y + 400 < 0) // 남쪽에서만 생성 수 있도록 함
+				{
+					Scene->AddObject(x - 250, -y + 400, OBJECT_CHARACTER, Team_Bottom, false, ATTACK_SKY, UNIT_SKY);     // 캐릭터 생성
+					Scene->BottomCharacter2_delay = 0;
+					//m_Sound->PlaySound(Birth_Sound, false, 0.5f);
+				}
+				else
+					cout << "생성할 수 없는 지역입니다." << endl;
+			}
+
+		}
+		RightButtonDown = false;
+	}
 
 	RenderScene();
 }
@@ -114,6 +133,7 @@ int main(int argc, char **argv)
 	{
 		std::cout << "GLEW 3.0 not supported\n ";
 	}
+	
 
 	glutDisplayFunc(RenderScene);
 	glutIdleFunc(Idle);
