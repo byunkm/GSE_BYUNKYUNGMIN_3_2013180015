@@ -31,6 +31,9 @@ private:
 	float BottomBullet_delay;
 	float Dir[2];
 
+	bool Status;
+	int Attack_type;
+
 	int Object_type;
 	int Object_ID;
 	int team;

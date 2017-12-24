@@ -17,8 +17,8 @@ SceneMgr::SceneMgr(int width, int height)
 	char file_path[] = "Nexus.png";
 	char file_path2[] = "colony.png";
 	char file_path3[] = "Cb.png";
-	char file_path4[] = "test.png";
-	char file_path7[] = "Player_bottom.png";
+	char file_path4[] = "Player_bottom.png";
+	char file_path7[] = "test.png";
 
 	char file_path5[] = "Particle1.png";
 	char file_path6[] = "Particle2.png";
