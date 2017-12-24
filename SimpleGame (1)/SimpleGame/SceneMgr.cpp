@@ -14,44 +14,7 @@ SceneMgr::SceneMgr(int width, int height)
 		m_Objects[i] = NULL;
 	}
 
-	char file_path[] = "Nexus.png";
-	char file_path2[] = "colony.png";
-	char file_path3[] = "Cb.png";
-	char file_path4[] = "Mecha.png";
-	char file_path7[] = "Zergmon.png";
-
-	char file_path5[] = "Particle1.png";
-	char file_path6[] = "Particle2.png";
-	char file_path8[] = "Terran.mp3";
-	char file_path9[] = "fire.png";
-	char file_path10[] = "Attack.mp3";
-	char file_path11[] = "ProtossAttack.mp3";
-	char Sky_Monster[] = "test.png";
-	char witch[] = "witch.png";
-
-	char Zergling[] = "zergling.mp3";
-	char Sky_Sound[] = "sky_monster.mp3";
-	char Hit[] = "Hit.mp3";
-
-	sound_index = m_Sound->CreateSound(file_path8);
-	AttackSound = m_Sound->CreateSound(file_path10);
-	ProtossAttackSound = m_Sound->CreateSound(file_path11);
-	ZerglingSound = m_Sound->CreateSound(Zergling);
-	Skymon_Sound = m_Sound->CreateSound(Sky_Sound);
-	HitSound = m_Sound->CreateSound(Hit);
-
-	m_Sound->PlaySound(sound_index, true, 0.2f);
-
-	Turret = renderer->CreatePngTexture(file_path);
-	colony = renderer->CreatePngTexture(file_path2);
-	Map_cb = renderer->CreatePngTexture(file_path3);
-	Player_bot = renderer->CreatePngTexture(file_path4);
-	Player_top = renderer->CreatePngTexture(file_path7);
-	Particle_1 = renderer->CreatePngTexture(file_path5);
-	Particle_2 = renderer->CreatePngTexture(file_path6);
-	fire = renderer->CreatePngTexture(file_path9);
-	Sky_monster = renderer->CreatePngTexture(Sky_Monster);
-	witch_terran = renderer->CreatePngTexture(witch);
+	Resource_Sound();
 
 	AddObject(0, 320, OBJECT_BUILDING, Team_Top, false, ATTACK_ALL, UNIT_GROUND);
 	AddObject(-200, 300, OBJECT_BUILDING, Team_Top, false, ATTACK_ALL, UNIT_GROUND);
@@ -61,6 +24,50 @@ SceneMgr::SceneMgr(int width, int height)
 	AddObject(-200, -300, OBJECT_BUILDING, Team_Bottom, false, ATTACK_ALL, UNIT_GROUND);
 	AddObject(200, -300, OBJECT_BUILDING, Team_Bottom, false, ATTACK_ALL, UNIT_GROUND);
 
+	m_Sound->PlaySound(sound_index, true, 0.2f);
+}
+
+void SceneMgr::Resource_Sound()
+{
+	// 리소스
+	char Nexus[] = "./Resource/Nexus.png";
+	char Zerg[] = "./Resource/colony.png";
+	char Back_Map[] = "./Resource/Cb.png";
+	char Mechanic[] = "./Resource/Mecha.png";
+	char Monster[] = "./Resource/Zergmon.png";
+	char Particle1[] = "./Resource/Particle1.png";
+	char Particle2[] = "./Resource/Particle2.png";
+	char Back_fire[] = "./Resource/fire.png";
+	char Sky_Monster[] = "./Resource/test.png";
+	char Arrow_par[] = "./Resource/Arrow_parti.png";
+	char witch[] = "./Resource/witch.png";
+
+	Turret = renderer->CreatePngTexture(Nexus);
+	colony = renderer->CreatePngTexture(Zerg);
+	Map_cb = renderer->CreatePngTexture(Back_Map);
+	Player_bot = renderer->CreatePngTexture(Mechanic);
+	Player_top = renderer->CreatePngTexture(Monster);
+	Particle_1 = renderer->CreatePngTexture(Particle1);
+	Particle_2 = renderer->CreatePngTexture(Particle2);
+	Arrow_particle = renderer->CreatePngTexture(Arrow_par);
+	fire = renderer->CreatePngTexture(Back_fire);
+	Sky_monster = renderer->CreatePngTexture(Sky_Monster);
+	witch_terran = renderer->CreatePngTexture(witch);
+
+	// 사운드
+	char file_path8[] = "./Mp3/Terran.mp3";
+	char file_path10[] = "./Mp3/Attack.mp3";
+	char file_path11[] = "./Mp3/ProtossAttack.mp3";
+	char Zergling[] = "./Mp3/zergling.mp3";
+	char Sky_Sound[] = "./Mp3/sky_monster.mp3";
+	char Hit[] = "./Mp3/Hit.mp3";
+
+	sound_index = m_Sound->CreateSound(file_path8);
+	AttackSound = m_Sound->CreateSound(file_path10);
+	ProtossAttackSound = m_Sound->CreateSound(file_path11);
+	ZerglingSound = m_Sound->CreateSound(Zergling);
+	Skymon_Sound = m_Sound->CreateSound(Sky_Sound);
+	HitSound = m_Sound->CreateSound(Hit);
 
 }
 void SceneMgr::DrawBack()
@@ -89,23 +96,29 @@ void SceneMgr::DrawBack()
 		fire, Particle_time, 0.01f
 	);
 	renderer->DrawParticle(
-		-150, -135, 0, 20,
+		-100, -135, 0, 20,
 		1, 1, 1, 1,
 		0.4, 0.3,
 		fire, Particle_time, 0.01f
 
 	);
 	renderer->DrawParticle(
-		300, -200, 0, 20,
+		100, -200, 0, 20,
 		1, 1, 1, 1,
 		0.4, 0.3,
 		fire, Particle_time, 0.01f
 	);
+	renderer->DrawParticle(
+		65, 220, 0, 20,
+		1, 1, 1, 1,
+		0.4, 0.3,
+		fire, Particle_time, 0.01f
+	);
+	// 맵에 불지르기
 }
 void SceneMgr::DrawAllObjects()
 {
 	DrawBack();
-
 	for (int i = 0; i < MAXOBJECT; i++)
 	{
 		if (m_Objects[i] != NULL)
@@ -222,7 +235,6 @@ void SceneMgr::DrawAllObjects()
 							m_Objects[i]->get_life() / CHARACTER_LIFE,
 							0.2
 						);
-					
 				}
 
 				if (m_Objects[i]->get_type() == OBJECT_CHARACTER && m_Objects[i]->get_team() == Team_Bottom)
@@ -282,17 +294,23 @@ void SceneMgr::DrawAllObjects()
 				if (m_Objects[i]->get_type() == OBJECT_BULLET
 					|| m_Objects[i]->get_type() == OBJECT_ARROW)
 				{
-					renderer->DrawSolidRect(
-						m_Objects[i]->get_x(),
-						m_Objects[i]->get_y(),
-						0,
-						m_Objects[i]->get_size(),
-						m_Objects[i]->get_colorR(),
-						m_Objects[i]->get_colorG(),
-						m_Objects[i]->get_colorB(),
-						m_Objects[i]->get_colorA(),
-						0.3f
-					);
+					if (m_Objects[i]->get_type() == OBJECT_ARROW) {
+						renderer->DrawParticle(
+							m_Objects[i]->get_x(),
+							m_Objects[i]->get_y(),
+							0,
+							m_Objects[i]->get_size(),
+							m_Objects[i]->get_colorR(),
+							m_Objects[i]->get_colorG(),
+							m_Objects[i]->get_colorB(),
+							m_Objects[i]->get_colorA(),
+							-m_Objects[i]->get_vx() / m_Objects[i]->get_speed(),
+							-m_Objects[i]->get_vy() / m_Objects[i]->get_speed(),
+							Arrow_particle,
+							m_Objects[i]->Particle_time_B,
+							0.1
+						);
+					}
 
 					if (m_Objects[i]->get_type() == OBJECT_BULLET)
 					{
@@ -382,6 +400,11 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 	Particle_level += elapsedTimeInSecond;
 	transform_time += elapsedTimeInSecond;
 
+	if (Wincount_bot == 0 || Wincount_Top == 0)
+	{
+		glutLeaveMainLoop();
+	}
+
 	// bullet 과 빌딩이 충돌하면 화면 흔들림 추가.
 	if (Shake == true)
 	{
@@ -402,8 +425,16 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 		{
 			if (m_Objects[i]->get_lifetime() < 0.0001f || m_Objects[i]->get_life() <= 0.0001f)
 			{
+				if (m_Objects[i]->get_type() == OBJECT_BUILDING)
+				{
+					if (m_Objects[i]->get_team() == Team_Top)
+						Wincount_Top -= 1;
+					if (m_Objects[i]->get_team() == Team_Bottom)
+						Wincount_bot -= 1;
+				}
 				delete m_Objects[i];
 				m_Objects[i] = NULL;
+				
 			}
 			// 시간과 라이프에 따른 오브젝트 제거
 			
@@ -442,6 +473,8 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 							m_Objects[i]->set_Arrow_delay(0.f);
 							m_Objects[i]->set_ID(i);
 							m_Objects[arrow_ID]->set_ID(i);
+							m_Sound->PlaySound(HitSound, false, 0.2f);
+
 						}
 
 						if (m_Objects[i]->get_team() == Team_Bottom)
@@ -450,6 +483,8 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 							m_Objects[i]->set_Arrow_delay(0.f);
 							m_Objects[i]->set_ID(i);
 							m_Objects[arrow_ID]->set_ID(i);
+							m_Sound->PlaySound(HitSound, false, 0.2f);
+
 						}
 					}
 
@@ -470,22 +505,19 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 	{
 		if (m_Objects[i] == NULL)
 		{
-		
 			if (TopCharacter_delay2 >= 3.0f)
 			{
-				default_random_engine dre;										// 랜덤 엔진
-				uniform_int_distribution<int> yPos(100, 400);					// y 좌표값의 제한( 북쪽지역에서만 생성)
+				default_random_engine dre;										
+				uniform_int_distribution<int> yPos(100, 400);					
 				dre.seed(time(NULL));
 
 				default_random_engine dre2;
 				uniform_int_distribution<int> xPos(-250, 250);
 				dre.seed(time(NULL));
 
-				AddObject(xPos(dre2), yPos(dre), OBJECT_CHARACTER, Team_Top, false, ATTACK_SKY, UNIT_SKY);	// 북쪽 지역 캐릭터의 생성
+				AddObject(xPos(dre2), yPos(dre), OBJECT_CHARACTER, Team_Top, false, ATTACK_SKY, UNIT_SKY); // 북쪽 공중 몬스터 생성
 				m_Sound->PlaySound(Skymon_Sound, false, 0.2f);
 				TopCharacter_delay2 = 0.0f;
-				m_Sound->PlaySound(HitSound, true, 0.2f);
-
 			}
 
 			if (TopCharacter_delay >= 5.0f)										
@@ -498,7 +530,7 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 				uniform_int_distribution<int> xPos(-250, 250);
 				dre.seed(time(NULL));
 
-				AddObject(xPos(dre2), yPos(dre), OBJECT_CHARACTER, Team_Top, false, ATTACK_GROUND, UNIT_GROUND);	// 북쪽 지역 캐릭터의 생성
+				AddObject(xPos(dre2), yPos(dre), OBJECT_CHARACTER, Team_Top, false, ATTACK_GROUND, UNIT_GROUND); // 북쪽 지상 캐릭터의 생성
 				TopCharacter_delay = 0.f;
 				m_Sound->PlaySound(ZerglingSound, false, 0.2f);
 			}
@@ -526,6 +558,7 @@ void SceneMgr::Collision()
 			}
 		}
 	}
+
 	for (int i = 0; i < MAXOBJECT; i++)
 	{
 		if (m_Objects[i] != NULL)
@@ -556,19 +589,18 @@ void SceneMgr::Collision()
 					if (m_Objects[i]->get_type() == OBJECT_CHARACTER
 						&& m_Objects[i]->get_team() != m_Objects[j]->get_team())
 					{
-						if (CollisionCheck(minX - RANGE, minY - RANGE, maxX+ RANGE, maxY + RANGE, minX1 - RANGE, minY1 - RANGE, maxX1 + RANGE, maxY1 + RANGE))
+						if (CollisionCheck(minX - RANGE, minY - RANGE, maxX+ RANGE, maxY + RANGE, minX1 - RANGE, minY1 - RANGE, maxX1 + RANGE, maxY1 + RANGE)) // 공격 범위 안에 있을경우
 						{
-							if (m_Objects[j]->get_type() == OBJECT_CHARACTER)
+							if (m_Objects[j]->get_type() == OBJECT_CHARACTER) // 둘다 캐릭터라면?
 							{
-								
-								if (m_Objects[i]->get_A_type() == m_Objects[j]->get_U_type())
+								if (m_Objects[i]->get_A_type() == m_Objects[j]->get_U_type()) // 나의 공격타입과 상대의 유닛 타입이 같다면 (하늘 == 하늘)
 								{
-									m_Objects[i]->set_Status(true);
+									m_Objects[i]->set_Status(true); // 둘다 움직임을 멈추고 그 자리에서 공격을 계속한다.
 									m_Objects[j]->set_Status(true);
 								}
 							}
 
-							if (m_Objects[j]->get_type() == OBJECT_ARROW)
+							if (m_Objects[j]->get_type() == OBJECT_ARROW) 
 							{
 								if (m_Objects[i]->get_ID() != m_Objects[j]->get_ID()) // 아이디가 달라야 실행(자기가 쏜 화살이 아니어야한다)
 								{

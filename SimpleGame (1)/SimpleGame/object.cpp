@@ -18,7 +18,7 @@ Object::Object(float x, float y, int type, int team, bool status, bool Attack_ty
 		set_size(100);
 		set_colorR(1); set_colorG(1); set_colorB(1); set_colorA(1);
 
-		set_life(BUILDING_LIFE);
+		set_life(300);
 		set_lifetime(LIFE);
 		set_type(type);
 		set_team(team);

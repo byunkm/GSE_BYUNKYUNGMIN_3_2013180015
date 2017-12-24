@@ -70,7 +70,7 @@ void MouseInput(int button, int state, int x, int y)
 			{
 				if (-y + 400 < 0) // 남쪽에서만 생성 수 있도록 함
 				{
-					Scene->AddObject(x - 250, -y + 400, OBJECT_CHARACTER, Team_Bottom, false, ATTACK_GROUND, UNIT_GROUND);     // 캐릭터 생성
+					Scene->AddObject(x - 250, -y + 400, OBJECT_CHARACTER, Team_Bottom, false, ATTACK_GROUND, UNIT_GROUND);  // 지상 캐릭터 생성
 					Scene->BottomCharacter_delay = 0;
 					//m_Sound->PlaySound(Birth_Sound, false, 0.5f);
 				}
@@ -89,7 +89,7 @@ void MouseInput(int button, int state, int x, int y)
 			{
 				if (-y + 400 < 0) // 남쪽에서만 생성 수 있도록 함
 				{
-					Scene->AddObject(x - 250, -y + 400, OBJECT_CHARACTER, Team_Bottom, false, ATTACK_SKY, UNIT_SKY);     // 캐릭터 생성
+					Scene->AddObject(x - 250, -y + 400, OBJECT_CHARACTER, Team_Bottom, false, ATTACK_SKY, UNIT_SKY);     // 공중 캐릭터 생성
 					Scene->BottomCharacter2_delay = 0;
 					//m_Sound->PlaySound(Birth_Sound, false, 0.5f);
 				}
