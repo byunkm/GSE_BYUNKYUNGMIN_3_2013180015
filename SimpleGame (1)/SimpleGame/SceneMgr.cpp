@@ -1,19 +1,6 @@
 #include "stdafx.h"
 #include "SceneMgr.h"
 #include "Sound.h"
-GLuint Turret = 0;
-GLuint colony = 0;
-GLuint Map_cb = 0;
-GLuint Player_bot = 0;
-GLuint Player_top = 0;
-GLuint Star = 0;
-
-GLuint Particle_1 = 0;
-GLuint Particle_2 = 0;
-float Particle_time = 0;
-float Particle_time2 ;
-float Particle_level = 0;
-int sound_index = 0;
 
 SceneMgr::SceneMgr(int width, int height)
 {
@@ -27,19 +14,24 @@ SceneMgr::SceneMgr(int width, int height)
 		m_Objects[i] = NULL;
 	}
 
-	char file_path[] = "terret.png";
+	char file_path[] = "Nexus.png";
 	char file_path2[] = "colony.png";
 	char file_path3[] = "Cb.png";
-	char file_path4[] = "Player_bottom.png";
-	char file_path7[] = "Player_top.png";
+	char file_path4[] = "test.png";
+	char file_path7[] = "Player_bottom.png";
 
 	char file_path5[] = "Particle1.png";
 	char file_path6[] = "Particle2.png";
 	char file_path8[] = "Terran.mp3";
-	char file_path9[] = "Star.png";
+	char file_path9[] = "fire.png";
+	char file_path10[] = "Attack.mp3";
+	char file_path11[] = "ProtossAttack.mp3";
 
 	sound_index = m_Sound->CreateSound(file_path8);
+	AttackSound = m_Sound->CreateSound(file_path10);
+	ProtossAttackSound = m_Sound->CreateSound(file_path11);
 	m_Sound->PlaySound(sound_index, true, 0.2f);
+
 	Turret = renderer->CreatePngTexture(file_path);
 	colony = renderer->CreatePngTexture(file_path2);
 	Map_cb = renderer->CreatePngTexture(file_path3);
@@ -47,7 +39,7 @@ SceneMgr::SceneMgr(int width, int height)
 	Player_top = renderer->CreatePngTexture(file_path7);
 	Particle_1 = renderer->CreatePngTexture(file_path5);
 	Particle_2 = renderer->CreatePngTexture(file_path6);
-	Star = renderer->CreatePngTexture(file_path9);
+	fire = renderer->CreatePngTexture(file_path9);
 
 	AddObject(0, 320, OBJECT_BUILDING, Team_Top);
 	AddObject(-200, 300, OBJECT_BUILDING, Team_Top);
@@ -57,18 +49,37 @@ SceneMgr::SceneMgr(int width, int height)
 	AddObject(-200, -300, OBJECT_BUILDING, Team_Bottom);
 	AddObject(200, -300, OBJECT_BUILDING, Team_Bottom);
 
-	
 
 }
-
-void SceneMgr::DrawAllObjects()
+void SceneMgr::DrawBack()
 {
-	
-	renderer->DrawTexturedRect(0, 0, 0, 800, 1, 1, 1,1, Map_cb, 0.5);
+
+	renderer->DrawTexturedRect(0, 0, 0, 800, 1, 1, 1, 1, Map_cb, 0.5);
 
 	renderer->DrawText(-90, 0, GLUT_BITMAP_TIMES_ROMAN_24, 1.f, 1.f, 1.f, "2013180015 byunkm");
-	
-	renderer->DrawParticleClimate(0, 0, 0, 1, 1, 1, 1, 1, -0.1, -0.1, Star, Particle_time, 0.01);
+
+	//renderer->DrawParticle(
+	//	50, 50, 0, 20,
+	//	1, 1, 1, 1,
+	//	0.4, 0.3,
+	//	fire, Particle_time, 0.01f
+	//);
+	//renderer->DrawParticle(
+	//	-70, 50, 0, 20,
+	//	1, 1, 1, 1,
+	//	-0.4, 0.3,
+	//	fire, Particle_time, 0.01f
+	//);
+	//renderer->DrawParticle(
+	//	50, 100, 0, 20,
+	//	1, 1, 1, 1,
+	//	0.4, 0.3,
+	//	fire, Particle_time, 0.01f
+	//);
+}
+void SceneMgr::DrawAllObjects()
+{
+	DrawBack();
 
 	for (int i = 0; i < MAXOBJECT; i++)
 	{
@@ -158,7 +169,7 @@ void SceneMgr::DrawAllObjects()
 						m_Objects[i]->get_colorG(),
 						m_Objects[i]->get_colorB(),
 						m_Objects[i]->get_colorA(),
-						Player_bot,
+						Player_top,
 						transform, 0,
 						4,4,
 						0.1
@@ -181,18 +192,7 @@ void SceneMgr::DrawAllObjects()
 
 				if (m_Objects[i]->get_type() == OBJECT_CHARACTER && m_Objects[i]->get_team() == Team_Bottom)
 				{
-					/*renderer->DrawSolidRect(
-						m_Objects[i]->get_x(),
-						m_Objects[i]->get_y(),
-						0,
-						m_Objects[i]->get_size(),
-						m_Objects[i]->get_colorR(),
-						m_Objects[i]->get_colorG(),
-						m_Objects[i]->get_colorB(),
-						m_Objects[i]->get_colorA(),
-						0.2f
-					);*/
-
+				
 					renderer->DrawTexturedRectSeq
 					(
 						m_Objects[i]->get_x(),
@@ -324,6 +324,20 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 	Particle_level += elapsedTimeInSecond;
 	transform_time += elapsedTimeInSecond;
 
+	// bullet 과 빌딩이 충돌하면 화면 흔들림 추가.
+	if (Shake == true)
+	{
+		int shakeBias = rand() % 20;
+		Sheke_time += elapsedTime * 0.001f;
+		renderer->SetSceneTransform(shakeBias, shakeBias, 1, 1);
+		if (Sheke_time >= 1.f)
+		{
+			Shake = false;
+			Sheke_time = 0.f;
+			renderer->SetSceneTransform(0, 0, 1, 1);
+		}
+	}
+
 	for (int i = 0; i < MAXOBJECT; i++)
 	{
 		if (m_Objects[i] != NULL)
@@ -340,7 +354,7 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 				m_Objects[i]->Update(elapsedTime);
 				if (m_Objects[i]->get_type() == OBJECT_BUILDING) // 오브젝트의 타입이 빌딩 일때
 				{
-					if (m_Objects[i]->get_TopBullet_delay() > 1.0f)  
+					if (m_Objects[i]->get_TopBullet_delay() > 5.0f)  
 					{
 						if (m_Objects[i]->get_team() == Team_Top)
 						{
@@ -349,7 +363,7 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 						}
 					}
 
-					if (m_Objects[i]->get_BottomBullet_delay() > 1.0f)
+					if (m_Objects[i]->get_BottomBullet_delay() > 5.0f)
 					{
 						if (m_Objects[i]->get_team() == Team_Bottom)
 						{
@@ -388,9 +402,6 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 						transform_time = 0.f;
 					}
 				}
-				//화살
-
-			
 			}
 		}
 	}
@@ -471,6 +482,11 @@ void SceneMgr::Collision()
 								m_Objects[i]->set_life(m_Objects[i]->get_life() - m_Objects[j]->get_life()); // 빌딩의 hp에서 부딪힌 오브젝트 hp를 뺀다
 								delete m_Objects[j];														 // 빌딩과 부딪힌 오브젝트의 삭제
 								m_Objects[j] = NULL;
+								Shake = true;
+								if (m_Objects[i]->get_team() == Team_Top)
+									m_Sound->PlaySound(AttackSound, false, 0.2f);
+								else
+									m_Sound->PlaySound(ProtossAttackSound, false, 0.2f);
 							}
 
 							if (m_Objects[i]->get_type() == OBJECT_CHARACTER) // 캐릭터일때
@@ -486,7 +502,6 @@ void SceneMgr::Collision()
 								}
 								else
 								{
-									
 									m_Objects[i]->set_life(m_Objects[i]->get_life() - m_Objects[j]->get_life());
 									delete m_Objects[j];
 									m_Objects[j] = NULL;

@@ -108,11 +108,11 @@ Object::Object(float x, float y, int type, int team)
 	}
 }
 
+
 Object::~Object()
 {
 
 }
-
 void Object::Update(float elapsedTime)
 {
 	float elapsedTimeInSecond = elapsedTime / 1000.f;
@@ -124,11 +124,9 @@ void Object::Update(float elapsedTime)
 	TopBullet_delay += elapsedTimeInSecond;
 	BottomBullet_delay += elapsedTimeInSecond;
 
-	
 	Particle_time_B += elapsedTimeInSecond ;
 
-	
-	
+
 	if (get_x() > 250)
 	{
 		set_vx(-get_vx());

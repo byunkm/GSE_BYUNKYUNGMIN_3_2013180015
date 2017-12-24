@@ -6,6 +6,8 @@ class Object
 
 public:
 	Object(float x, float y, int type, int team);
+
+
 	~Object();
 
 private:
