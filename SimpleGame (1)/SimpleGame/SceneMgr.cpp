@@ -400,12 +400,12 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 	Particle_level += elapsedTimeInSecond;
 	transform_time += elapsedTimeInSecond;
 
-	if (Wincount_bot == 0 || Wincount_Top == 0)
+	if (Wincount_bot == Lose || Wincount_Top == Lose) // 남아있는 건물이 없는 플레이어가 발생하면 메인루프 빠져나감
 	{
 		glutLeaveMainLoop();
 	}
 
-	// bullet 과 빌딩이 충돌하면 화면 흔들림 추가.
+	// bullet 과 빌딩이 충돌하면 화면 흔들림 .
 	if (Shake == true)
 	{
 		int shakeBias = rand() % 20;
@@ -425,7 +425,7 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 		{
 			if (m_Objects[i]->get_lifetime() < 0.0001f || m_Objects[i]->get_life() <= 0.0001f)
 			{
-				if (m_Objects[i]->get_type() == OBJECT_BUILDING)
+				if (m_Objects[i]->get_type() == OBJECT_BUILDING) //남아있는 건물 조사
 				{
 					if (m_Objects[i]->get_team() == Team_Top)
 						Wincount_Top -= 1;
@@ -434,7 +434,6 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 				}
 				delete m_Objects[i];
 				m_Objects[i] = NULL;
-				
 			}
 			// 시간과 라이프에 따른 오브젝트 제거
 			
@@ -542,7 +541,6 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 
 void SceneMgr::Collision()
 {
-	particle++;
 	for (int i = 0; i < MAXOBJECT; i++)
 	{
 		if (m_Objects[i] != NULL)
@@ -587,7 +585,7 @@ void SceneMgr::Collision()
 					maxY1 = m_Objects[j]->get_y() + m_Objects[j]->get_size() / 2.f;
 
 					if (m_Objects[i]->get_type() == OBJECT_CHARACTER
-						&& m_Objects[i]->get_team() != m_Objects[j]->get_team())
+						&& m_Objects[i]->get_team() != m_Objects[j]->get_team()) // 둘다 캐릭터일떄를 위한 검사
 					{
 						if (CollisionCheck(minX - RANGE, minY - RANGE, maxX+ RANGE, maxY + RANGE, minX1 - RANGE, minY1 - RANGE, maxX1 + RANGE, maxY1 + RANGE)) // 공격 범위 안에 있을경우
 						{

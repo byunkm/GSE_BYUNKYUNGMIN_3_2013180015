@@ -4,15 +4,7 @@
 #include "Renderer.h"
 #include "Sound.h"
 #include "Object.h"
-
-#define MAXOBJECT 300
-#define OBJECT_BUILDING 0
-#define OBJECT_CHARACTER 1
-#define OBJECT_BULLET 2
-#define OBJECT_ARROW 3
-#define Team_Top 0
-#define Team_Bottom 1
-
+#include "stdafx.h"
 
 class SceneMgr
 {
@@ -46,7 +38,6 @@ public:
 	float Particle_time = 0;
 	float Particle_level = 0;
 	float Sheke_time = 0;
-	float particle = 0;
 	float Particle_time2 = 0;
 
 private:

@@ -7,7 +7,7 @@ Object::Object(float x, float y, int type, int team, bool status, bool Attack_ty
 	TopBullet_delay = 0.f;
 	BottomBullet_delay = 0.f;
 	
-	if (type == 0) // 건물
+	if (type == OBJECT_BUILDING) // 건물
 	{
 		set_x(x);
 		set_y(y);
@@ -15,10 +15,10 @@ Object::Object(float x, float y, int type, int team, bool status, bool Attack_ty
 		set_vx(0);
 		set_vy(0);
 
-		set_size(100);
+		set_size(BUILDING_SIZE);
 		set_colorR(1); set_colorG(1); set_colorB(1); set_colorA(1);
 
-		set_life(300);
+		set_life(BUILDING_LIFE);
 		set_lifetime(LIFE);
 		set_type(type);
 		set_team(team);
@@ -27,16 +27,16 @@ Object::Object(float x, float y, int type, int team, bool status, bool Attack_ty
 		set_U_type(Unit_type);
 	}
 
-	if (type == 1) // 캐릭터
+	if (type == OBJECT_CHARACTER) // 캐릭터
 	{
 		set_x(x);
 		set_y(y);
-		set_speed(300);
+		set_speed(CHARACTER_SPEED);
 
 		set_vx(get_speed() *(((float)std::rand() / (float)RAND_MAX) - 0.5f));
 		set_vy(get_speed() *(((float)std::rand() / (float)RAND_MAX) - 0.5f));
 
-		set_size(10);
+		set_size(CHARACTER_SIZE);
 
 		set_life(CHARACTER_LIFE);
 		set_lifetime(LIFE);
@@ -46,25 +46,25 @@ Object::Object(float x, float y, int type, int team, bool status, bool Attack_ty
 		set_Status(status);
 		set_A_type(Attack_type);
 		set_U_type(Unit_type);
-		if (team == 0)
+		if (team == Team_Top)
 		{
 			set_colorR(1); set_colorG(0); set_colorB(0); set_colorA(1);
 		}
-		else if (team == 1)
+		else if (team == Team_Bottom)
 		{
 			set_colorR(0); set_colorG(0); set_colorB(1); set_colorA(1);
 		}
 	}
 
-	if (type == 2) // 총알
+	if (type == OBJECT_BULLET) // 총알
 	{
 		set_x(x);
 		set_y(y);
-		set_speed(450);
+		set_speed(BULLET_SPEED);
 
 		set_vx((get_speed()*((float)std::rand() / (float)RAND_MAX - 0.5f)));
 
-		set_size(5);
+		set_size(BULLET_SIZE);
 		set_life(BULLET_LIFE);
 		set_lifetime(LIFE);
 
@@ -73,13 +73,13 @@ Object::Object(float x, float y, int type, int team, bool status, bool Attack_ty
 		set_Status(status);
 		set_A_type(Attack_type);
 		set_U_type(Unit_type);
-		if (team == 0) // Top
+		if (team == Team_Top) // Top
 		{
 			set_colorR(1); set_colorG(0); set_colorB(0); set_colorA(1);
 			set_vy((get_speed()*-((float)(std::rand()) / (float)RAND_MAX)));
 
 		}
-		else if (team == 1)
+		else if (team == Team_Bottom)
 		{
 			set_colorR(0); set_colorG(0); set_colorB(1); set_colorA(1);
 			set_vy((get_speed()*((float)(std::rand()) / (float)RAND_MAX)));
@@ -87,16 +87,16 @@ Object::Object(float x, float y, int type, int team, bool status, bool Attack_ty
 		}
 	}
 
-	if (type == 3) // 화살
+	if (type == OBJECT_ARROW) // 화살
 	{
 		set_x(x);
 		set_y(y);
-		set_speed(600);
+		set_speed(ARROW_SPEED);
 
 		set_vx((get_speed()*(((float)std::rand() / (float)RAND_MAX) - 0.5f)));
 		set_vy((get_speed()*(((float)std::rand() / (float)RAND_MAX) - 0.5f)));
 
-		set_size(5);
+		set_size(ARROW_SIZE);
 
 		set_life(ARROW_LIFE);
 		set_lifetime(LIFE);
@@ -106,11 +106,11 @@ Object::Object(float x, float y, int type, int team, bool status, bool Attack_ty
 		set_Status(status);
 		set_A_type(Attack_type);
 		set_U_type(Unit_type);
-		if (team == 0)
+		if (team == Team_Top)
 		{
 			set_colorR(0.5f); set_colorG(0.2f); set_colorB(0.7f); set_colorA(1);
 		}
-		else if (team == 1)
+		else if (team == Team_Bottom)
 		{
 			set_colorR(1); set_colorG(1); set_colorB(0); set_colorA(1);
 		}
@@ -126,15 +126,13 @@ void Object::Update(float elapsedTime, bool status)
 {
 	float elapsedTimeInSecond = elapsedTime / 1000.f;
 	
-	
-
 	Arrow_delay += elapsedTimeInSecond;
 	TopBullet_delay += elapsedTimeInSecond;
 	BottomBullet_delay += elapsedTimeInSecond;
 
 	Particle_time_B += elapsedTimeInSecond ;
 
-	if (status == false)
+	if (status == false) // 같은 유닛상태를 만나지 않았을때만 움직인다.
 	{
 		set_x(get_x() + get_vx()*elapsedTimeInSecond);
 		set_y(get_y() + get_vy()*elapsedTimeInSecond);
