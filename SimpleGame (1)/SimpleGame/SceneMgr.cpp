@@ -118,7 +118,7 @@ void SceneMgr::DrawBack()
 }
 void SceneMgr::DrawAllObjects()
 {
-	DrawBack();
+	DrawBack(); // 배경그리기
 	for (int i = 0; i < MAXOBJECT; i++)
 	{
 		if (m_Objects[i] != NULL)
@@ -390,7 +390,8 @@ int SceneMgr::AddObject(float x, float y, int Object_type, int team, bool status
 
 void SceneMgr::UpdateAllObjects(float elapsedTime)
 {
-	Collision();
+	Collision(); // 충돌 체크
+
 	float elapsedTimeInSecond = elapsedTime / 1000.f;
 	TopCharacter_delay += elapsedTimeInSecond;
 	TopCharacter_delay2 += elapsedTimeInSecond;
@@ -399,6 +400,7 @@ void SceneMgr::UpdateAllObjects(float elapsedTime)
 	Particle_time += elapsedTimeInSecond;
 	Particle_level += elapsedTimeInSecond;
 	transform_time += elapsedTimeInSecond;
+	// 시간 관련 업데이트
 
 	if (Wincount_bot == Lose || Wincount_Top == Lose) // 남아있는 건물이 없는 플레이어가 발생하면 메인루프 빠져나감
 	{
@@ -545,7 +547,7 @@ void SceneMgr::Collision()
 	{
 		if (m_Objects[i] != NULL)
 		{
-			if (m_Objects[i]->get_type() == OBJECT_BULLET || m_Objects[i]->get_type() == OBJECT_ARROW)
+			if (m_Objects[i]->get_type() == OBJECT_BULLET || m_Objects[i]->get_type() == OBJECT_ARROW) //총알, 화살은 맵밖으로 나가면 삭제
 			{
 				if (m_Objects[i]->get_x() <= -250 || m_Objects[i]->get_x() >= 250
 					|| m_Objects[i]->get_y() <= -400 || m_Objects[i]->get_y() >= 400)
